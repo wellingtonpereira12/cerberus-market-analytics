@@ -1,0 +1,21 @@
+services:
+  cerberus-market-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cerberus-market-app
+    restart: always
+    ports:
+      - "${PORT:-3150}:3150"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - PORT=3150
+      - DB_HOST=host.docker.internal
+      - DB_PORT=3306
+      - DB_USER=cerberus_owner
+      - DB_PASSWORD=CerberusMarket2026!
+      - DB_NAME=cerberus_market
+      - CERBERUS_COOKIE=${CERBERUS_COOKIE:-}
+    volumes:
+      - ./exports:/app/exports

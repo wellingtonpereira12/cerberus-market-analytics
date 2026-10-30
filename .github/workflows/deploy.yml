@@ -1,0 +1,35 @@
+name: Deploy Automático na VPS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Sincronizar e Subir Container na VPS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Conectar via SSH e Atualizar Projeto
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          script_stop: true
+          script: |
+            echo "🚀 [CI/CD] Atualizando Cerberus Market Analytics na VPS..."
+            mkdir -p /root/cerberus-market
+            cd /root/cerberus-market
+            if [ -d .git ]; then
+              git clean -fd
+              git fetch origin main || git fetch origin master
+              git reset --hard origin/main || git reset --hard origin/master
+            else
+              git clone https://github.com/${{ github.repository }}.git .
+            fi
+            docker compose up -d --build
+            echo "✅ [CI/CD] Deploy do Cerberus Market Analytics concluído com sucesso na porta 3150!"
