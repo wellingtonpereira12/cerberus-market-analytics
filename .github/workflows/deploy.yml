@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - master
   workflow_dispatch:
 
 jobs:
@@ -24,12 +23,10 @@ jobs:
             echo "🚀 [CI/CD] Atualizando Cerberus Market Analytics na VPS..."
             mkdir -p /root/cerberus-market
             cd /root/cerberus-market
-            if [ -d .git ]; then
-              git clean -fd
-              git fetch origin main || git fetch origin master
-              git reset --hard origin/main || git reset --hard origin/master
-            else
+            if [ ! -d .git ]; then
               git clone https://github.com/${{ github.repository }}.git .
             fi
+            git fetch origin main
+            git reset --hard origin/main
             docker compose up -d --build
-            echo "✅ [CI/CD] Deploy do Cerberus Market Analytics concluído com sucesso na porta 3150!"
+            echo "✅ [CI/CD] Deploy concluído com sucesso na porta 3150!"
