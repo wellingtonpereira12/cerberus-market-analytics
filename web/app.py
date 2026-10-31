@@ -36,6 +36,7 @@ class CookiePayload(BaseModel):
 
 class ScrapeTriggerPayload(BaseModel):
     pages: Optional[int] = 2
+    auction_pages: Optional[int] = 5
     fetch_details: Optional[bool] = False
 
 @app.on_event("startup")
@@ -82,11 +83,11 @@ def get_stats():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def run_scraper_task(pages: int, fetch_details: bool):
+def run_scraper_task(pages: int, auction_pages: int, fetch_details: bool):
     global is_scraping
     is_scraping = True
     try:
-        scraper_instance.run(max_forum_pages=pages, fetch_details=fetch_details)
+        scraper_instance.run(max_forum_pages=pages, max_auction_pages=auction_pages, fetch_details=fetch_details)
     except Exception as e:
         print(f"Background scraper error: {e}")
     finally:
@@ -98,8 +99,9 @@ def trigger_scrape(payload: ScrapeTriggerPayload, background_tasks: BackgroundTa
     if is_scraping:
         return {"status": "already_running", "message": "Scraping is already in progress"}
     
-    background_tasks.add_task(run_scraper_task, payload.pages or 2, payload.fetch_details or False)
-    return {"status": "started", "message": f"Scraping started for {payload.pages or 2} pages"}
+    background_tasks.add_task(run_scraper_task, payload.pages or 2, payload.auction_pages or 5, payload.fetch_details or False)
+    return {"status": "started", "message": f"Scraping started (Forum: {payload.pages or 2} pages, Auction: {payload.auction_pages or 5} pages)"}
+
 
 @app.post("/api/cookie")
 def set_cookie(payload: CookiePayload):

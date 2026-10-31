@@ -16,6 +16,8 @@ services:
       - DB_USER=cerberus_owner
       - DB_PASSWORD=CerberusMarket2026!
       - DB_NAME=cerberus_market
+      - CERBERUS_USER=${CERBERUS_USER:-teste1}
+      - CERBERUS_PASSWORD=${CERBERUS_PASSWORD:-Le91916212.}
       - CERBERUS_COOKIE=${CERBERUS_COOKIE:-}
     volumes:
       - ./exports:/app/exports
