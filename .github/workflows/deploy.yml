@@ -18,6 +18,8 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT }}
+          timeout: 120s
+          command_timeout: 15m
           script_stop: true
           script: |
             echo "🚀 [CI/CD] Atualizando Cerberus Market Analytics na VPS..."
@@ -30,3 +32,4 @@ jobs:
             git reset --hard origin/main
             docker compose up -d --build
             echo "✅ [CI/CD] Deploy concluído com sucesso na porta 3150!"
+
