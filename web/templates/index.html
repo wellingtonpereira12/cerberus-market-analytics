@@ -8,11 +8,10 @@
   <!-- FontAwesome & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     /* ============================================================
-       CERBERUS GAMES MARKET OFFICIAL THEME CLONE & ENHANCEMENTS
+       CERBERUS GAMES MARKET THEME & EXACT SIDEBAR CLONE
        ============================================================ */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -104,7 +103,7 @@
       filter: brightness(1.15);
     }
 
-    /* Submenu / Filters Bar */
+    /* Submenu / Top Controls Bar */
     .submenu-bar {
       background-color: #1d1c25;
       border-bottom: 1px solid #282633;
@@ -169,7 +168,7 @@
       outline: none;
     }
 
-    /* Main Layout */
+    /* Main Container */
     .market-container {
       display: flex;
       flex: 1;
@@ -181,34 +180,34 @@
     }
 
     /* ============================================================
-       SIDEBAR FILTERS (EXACT MATCH TO CERBERUS GAMES MARKET SCREEN)
+       SIDEBAR FILTERS (EXACT CERBERUS GAMES MARKET STYLING)
        ============================================================ */
     .p-body-sideNavCol {
-      width: 270px;
+      width: 255px;
       flex-shrink: 0;
     }
     #navSection {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 10px;
     }
 
-    /* Race Filters */
+    /* Race Filters (Bellato / Cora / Accretia) */
     .raceFilters {
       display: flex;
       gap: 10px;
-      justify-content: center;
+      justify-content: space-between;
     }
     .raceFilters .race {
       flex: 1;
-      height: 48px;
+      height: 44px;
       background-color: #2d2c36;
       display: flex;
       justify-content: center;
       align-items: center;
-      border-radius: 4px;
+      border-radius: 3px;
       cursor: pointer;
-      border: 1px solid #3c3a47;
+      border: 1px solid #3a3946;
       transition: all 0.2s;
       position: relative;
     }
@@ -219,87 +218,90 @@
     }
     .raceFilters .race:hover {
       background-color: #383644;
-      border-color: #555266;
     }
     .raceFilters .race.bellato.active {
-      background-color: #4a4526;
-      border-color: #cbc168;
-      box-shadow: 0 0 10px rgba(203, 193, 104, 0.4);
+      background-color: #cbc168 !important;
+      border-color: #e5da7e;
+      box-shadow: 0 0 10px rgba(203, 193, 104, 0.5);
     }
     .raceFilters .race.cora.active {
-      background-color: #3e2a44;
-      border-color: #b78fc1;
-      box-shadow: 0 0 10px rgba(183, 143, 193, 0.4);
+      background-color: #b78fc1 !important;
+      border-color: #cfabd9;
+      box-shadow: 0 0 10px rgba(183, 143, 193, 0.5);
     }
     .raceFilters .race.acretia.active {
-      background-color: #4a2626;
-      border-color: #e58e8e;
-      box-shadow: 0 0 10px rgba(229, 142, 142, 0.4);
+      background-color: #b77878 !important;
+      border-color: #d49292;
+      box-shadow: 0 0 10px rgba(183, 120, 120, 0.5);
     }
 
-    /* Level Filters */
+    /* Level Filters (Min & Max) */
     .levelFilters {
       display: flex;
+      justify-content: space-between;
       gap: 10px;
     }
     .levelFilters input {
-      height: 38px;
-      flex: 1;
-      background-color: #272632 !important;
-      border: 1px solid #383546 !important;
-      border-radius: 3px !important;
+      height: 35px;
+      background-color: #2d2c36 !important;
+      border-radius: 2px !important;
+      border: 1px solid #3a3946;
       font-size: 13px;
       font-weight: 600;
-      color: #e2e8f0 !important;
-      padding: 0 10px;
+      color: #ffffff !important;
+      padding: 8px 10px;
       text-align: center;
+      width: 100%;
       outline: none;
     }
+    .levelFilters input::placeholder {
+      color: #716f84;
+    }
     .levelFilters input:focus {
-      border-color: #6366f1 !important;
+      border-color: #6366f1;
     }
 
-    /* Filter Blocks Accordion */
+    /* Accordion Block */
     .filtersBlock {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
     }
-    .filterBlockHeader {
+    .filtersBlock .filterBlockHeader {
       box-sizing: border-box;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 12px;
+      padding: 8px 12px;
       gap: 10px;
       min-width: 120px;
       height: 38px;
-      background: linear-gradient(90deg, #3d3e48 0%, #525363 100%);
+      background: linear-gradient(90deg, #43444f 0%, #5e6072 100%);
       border-radius: 3px;
       cursor: pointer;
       user-select: none;
-      transition: background 0.2s;
+      transition: background 0.15s;
     }
-    .filterBlockHeader:hover {
-      background: linear-gradient(90deg, #484955 0%, #5d5f70 100%);
+    .filtersBlock .filterBlockHeader:hover {
+      background: linear-gradient(90deg, #4c4d59 0%, #686b7e 100%);
     }
-    .filterBlockHeader .icon {
-      font-size: 14px;
-      color: #cbd5e1;
-      width: 18px;
-      text-align: center;
+    .filtersBlock .filterBlockHeader .icon-svg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
     }
-    .filterBlockHeader .title {
-      flex: 1;
-      font-size: 13px;
-      font-weight: 700;
-      color: #e2e8f0;
+    .filtersBlock .filterBlockHeader .title {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-grow: 1;
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
     }
-    .filterBlockHeader .title span.count-badge {
+    .filtersBlock .filterBlockHeader .title span.count-badge {
       border-radius: 12px;
       padding: 1px 8px;
       background-color: #0076fe;
@@ -307,153 +309,183 @@
       font-size: 11px;
       font-weight: 700;
     }
-    .filterBlockHeader .arrow {
-      font-size: 12px;
-      color: #94a3b8;
-      transition: transform 0.2s;
+    .filtersBlock .filterBlockHeader svg.arrow_up {
+      display: none;
     }
-    .filterBlockHeader.open .arrow {
-      transform: rotate(180deg);
+    .filtersBlock .filterBlockHeader.open svg.arrow_down {
+      display: none;
+    }
+    .filtersBlock .filterBlockHeader.open svg.arrow_up {
+      display: block;
     }
 
-    .filterBlockBody {
-      background: #25242d;
-      box-shadow: inset 0px 4px 6px rgba(0,0,0,0.3);
-      border-radius: 3px;
+    /* Accordion Bodies */
+    .filtersBlock .filterBlockBody {
+      box-sizing: border-box;
+      width: 100%;
+      background: #2c2b32;
+      box-shadow: inset 0px 4px 4px rgba(0,0,0,0.25);
+      border-radius: 2px;
+      padding: 6px 8px;
       display: none;
-      padding: 8px 10px;
-      gap: 6px;
       flex-direction: column;
-      max-height: 220px;
+      gap: 3px;
+      max-height: 240px;
       overflow-y: auto;
     }
-    .filterBlockBody.open {
+    .filtersBlock .filterBlockBody.open {
       display: flex;
     }
 
-    /* Grade checkboxes grid */
-    .filterBlockBody.grade-grid {
+    /* Grade Grid Body */
+    .filtersBlock .filterBlockBody#gradeFiters {
       display: none;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 6px;
+      gap: 5px;
+      flex-direction: row;
     }
-    .filterBlockBody.grade-grid.open {
+    .filtersBlock .filterBlockBody#gradeFiters.open {
       display: flex;
     }
-    .gradeCheckbox {
+    .filtersBlock .filterBlockBody#gradeFiters > .gradeCheckbox {
       width: 48%;
       height: 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 8px;
-      font-size: 11px;
+      padding: 0 6px;
+      color: #272727;
+      font-size: 12px;
       font-weight: 700;
       border-radius: 2px;
       cursor: pointer;
       user-select: none;
     }
-    .gradeCheckbox input {
+    .filtersBlock .filterBlockBody#gradeFiters > .gradeCheckbox label {
       cursor: pointer;
-      accent-color: #6366f1;
+      flex-grow: 1;
     }
-    .grade0Background { background-color: #e2e8f0; color: #1e293b; }
-    .grade1Background { background-color: #fde047; color: #1e293b; }
-    .grade2Background { background-color: #facc15; color: #1e293b; }
-    .grade3Background { background-color: #fb923c; color: #1e293b; }
-    .grade4Background { background-color: #f87171; color: #fff; }
-    .grade5Background { background-color: #c084fc; color: #fff; }
-    .grade6Background { background-color: #60a5fa; color: #fff; }
-    .grade7Background { background-color: #4ade80; color: #1e293b; }
-    .grade8Background { background-color: #38bdf8; color: #1e293b; }
-    .grade9Background { background-color: #f43f5e; color: #fff; }
+    .filtersBlock .filterBlockBody#gradeFiters > .gradeCheckbox input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: #282828;
+    }
 
-    /* Component Checkboxes */
+    /* Official Grade Gradients */
+    .grade0Background { background: linear-gradient(90deg, #fff 0%, #999) !important; color: #1e293b !important; }
+    .grade1Background { background: linear-gradient(90deg, #ffffa3 0%, #999) !important; color: #1e293b !important; }
+    .grade2Background { background: linear-gradient(90deg, #b5a3d3 0%, #999) !important; color: #1e293b !important; }
+    .grade3Background { background: linear-gradient(90deg, #eaa037 0%, #999) !important; color: #1e293b !important; }
+    .grade4Background { background: linear-gradient(90deg, #1188e2 0%, #999) !important; color: #ffffff !important; }
+    .grade5Background { background: linear-gradient(90deg, #fc4b78 0%, #999) !important; color: #ffffff !important; }
+    .grade6Background { background: linear-gradient(90deg, #d31111 0%, #999) !important; color: #ffffff !important; }
+    .grade7Background { background: linear-gradient(90deg, #2ecc71 0%, #999) !important; color: #1e293b !important; }
+    .grade8Background { background: linear-gradient(90deg, #87ddff 0%, #999) !important; color: #1e293b !important; }
+    .grade9Background { background: linear-gradient(90deg, #e74c3c 0%, #999) !important; color: #ffffff !important; }
+
+    /* Item Component Checkboxes */
     .itemTypeComponentCheckbox {
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cccccc;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 5px 8px;
-      background-color: #2e2d39;
       border-radius: 2px;
-      font-size: 12px;
-      color: #cbd5e1;
-      cursor: pointer;
-      transition: all 0.15s;
+      transition: background 0.15s;
+      user-select: none;
     }
     .itemTypeComponentCheckbox:hover {
-      background-color: #3a3949;
+      background-color: #3b3a47;
       color: #ffffff;
+    }
+    .itemTypeComponentCheckbox.active {
+      background-color: #4e4f5d;
+      color: #ffffff;
+      border-left: 3px solid #0076fe;
     }
     .itemTypeComponentCheckbox input {
       cursor: pointer;
-      accent-color: #6366f1;
+      accent-color: #0076fe;
     }
 
-    /* Submit & Action Buttons in Sidebar */
+    /* Action Buttons in Sidebar */
     .filterSubmit {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-top: 5px;
+      gap: 8px;
+      margin-top: 8px;
     }
     #searchByFilters {
-      height: 38px;
-      background-color: #c0e0f1;
-      color: #1e293b;
-      font-weight: 800;
-      font-size: 13px;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       gap: 8px;
+      width: 100%;
+      height: 35px;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0px 4px 4px rgba(0,0,0,0.25);
+      border-radius: 2px;
+      border: none;
+      color: #272727;
+      cursor: pointer;
+      background: #c0e0f1;
       transition: all 0.2s;
     }
     #searchByFilters:hover {
-      background-color: #a5d2eb;
-      transform: translateY(-1px);
+      background: #a9d4eb;
     }
     #resetFilters {
-      height: 34px;
-      background: linear-gradient(90deg, #e58e8e 0%, #c47575 100%);
-      color: #1e293b;
-      font-weight: 700;
-      font-size: 12px;
-      border-radius: 3px;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 32px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0px 4px 4px rgba(0,0,0,0.25);
+      border-radius: 2px;
+      border: none;
+      color: #272727;
       cursor: pointer;
+      background: linear-gradient(90deg, #e58e8e 0%, #c47575 100%);
       transition: all 0.2s;
     }
     #resetFilters:hover {
       filter: brightness(1.1);
     }
 
-    /* Prominent Scrape with Filters Button */
+    /* PROMINENT BUTTON: SCRAPE COM ESTES FILTROS */
     #scrapeWithFiltersBtn {
-      height: 44px;
-      background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
-      color: #ffffff;
-      font-weight: 800;
-      font-size: 13px;
-      border: 1px solid #8b5cf6;
-      border-radius: 4px;
-      cursor: pointer;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+      align-items: center;
+      gap: 2px;
+      width: 100%;
+      height: 48px;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+      border-radius: 3px;
+      border: 1px solid #8b5cf6;
+      color: #ffffff;
+      cursor: pointer;
+      background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
       transition: all 0.2s;
+      margin-top: 4px;
     }
     #scrapeWithFiltersBtn:hover {
       filter: brightness(1.15);
       transform: translateY(-1px);
+    }
+    #scrapeWithFiltersBtn .subtext {
+      font-size: 10px;
+      font-weight: 500;
+      color: #ddd6fe;
     }
 
     /* ============================================================
@@ -468,7 +500,7 @@
 
     /* Notification banner */
     .scraping-banner {
-      background: linear-gradient(90deg, rgba(124, 58, 237, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%);
+      background: linear-gradient(90deg, rgba(124, 58, 237, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%);
       border: 1px solid #7c3aed;
       border-radius: 4px;
       padding: 12px 18px;
@@ -479,6 +511,38 @@
       animation: pulse 2s infinite;
     }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+    /* Active Filter Summary Bar */
+    .active-filter-bar {
+      background-color: #21202b;
+      border: 1px solid #333140;
+      border-radius: 3px;
+      padding: 8px 14px;
+      font-size: 12px;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .active-filter-tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .filter-pill {
+      background-color: #312f3f;
+      border: 1px solid #4a475d;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      color: #f1f5f9;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
 
     /* Items Container (Grid View) */
     .itemsList {
@@ -561,7 +625,7 @@
       text-transform: uppercase;
     }
     .tag-race.Bellato { background-color: rgba(234, 179, 8, 0.2); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3); }
-    .tag-race.Cora { background-color: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .tag-race.Cora { background-color: rgba(183, 143, 193, 0.2); color: #c084fc; border: 1px solid rgba(183, 143, 193, 0.3); }
     .tag-race.Accretia { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
     .tag-race.All { background-color: rgba(148, 163, 184, 0.2); color: #94a3b8; }
 
@@ -616,7 +680,7 @@
       color: #ffffff;
     }
 
-    /* Inline Expandable Details Box */
+    /* Expandable details */
     .inline-details-box {
       display: none;
       background-color: #1a1921;
@@ -728,13 +792,13 @@
       <div class="brand-icon"><i class="fa-solid fa-gamepad"></i></div>
       <div>
         <div class="brand-title">Cerberus Games Market Scraper</div>
-        <div class="brand-sub">Sistema de Coleta & Análise de Dados (cerberus-games.com/market)</div>
+        <div class="brand-sub">Coleta &amp; Análise de Dados (cerberus-games.com/market)</div>
       </div>
     </div>
 
     <div class="top-actions">
       <button onclick="openCookieModal()" class="btn-top">
-        <i class="fa-solid fa-key text-purple-400"></i> Conta / Cookie
+        <i class="fa-solid fa-key text-purple-400"></i> Sessão / Conta
       </button>
       <a href="/api/export/csv" class="btn-top">
         <i class="fa-solid fa-file-csv text-green-400"></i> Exportar CSV
@@ -742,8 +806,8 @@
       <a href="/api/export/json" class="btn-top">
         <i class="fa-solid fa-file-code text-amber-400"></i> Exportar JSON
       </a>
-      <button onclick="triggerQuickScrape()" class="btn-top btn-accent" id="btn-quick-scrape">
-        <i class="fa-solid fa-rotate text-sm"></i> Atualizar Tudo
+      <button onclick="triggerScrapeWithActiveFilters()" class="btn-top btn-accent" id="btn-top-scrape" title="Dispara a coleta com os filtros selecionados na barra lateral">
+        <i class="fa-solid fa-bolt"></i> Iniciar Scraping
       </button>
     </div>
   </header>
@@ -796,12 +860,12 @@
   <main class="market-container">
 
     <!-- ============================================================
-         LEFT SIDEBAR FILTERS (EXACT MATCH TO THE UPLOADED SCREENSHOT)
+         LEFT SIDEBAR FILTERS (EXACT MATCH TO CERBERUS MARKET SCREEN)
          ============================================================ -->
     <aside class="p-body-sideNavCol">
       <div id="navSection">
 
-        <!-- Race Filters (Bellato / Cora / Accretia) -->
+        <!-- 1. Race Filters (Bellato / Cora / Accretia) -->
         <div class="raceFilters">
           <div class="race bellato" id="race-bellato" onclick="toggleRaceFilter(this, 'bellato')" title="Bellato">
             <input type="checkbox" name="race[]" value="bellato" style="display: none;">
@@ -817,20 +881,29 @@
           </div>
         </div>
 
-        <!-- Level Range (Min / Max) -->
+        <!-- 2. Level Range (Min / Max) -->
         <div class="levelFilters">
           <input type="text" id="levelMinInput" placeholder="Level (min)" maxlength="2" onkeyup="filterNumbersOnly(this)">
           <input type="text" id="levelMaxInput" placeholder="Level (max)" maxlength="2" onkeyup="filterNumbersOnly(this)">
         </div>
 
-        <!-- 1. Grade Accordion -->
+        <!-- 3. Grade Accordion -->
         <div class="filtersBlock">
           <div class="filterBlockHeader" onclick="toggleAccordion('gradeFiters', this)">
-            <i class="fa-solid fa-filter icon"></i>
+            <div class="icon-svg">
+              <svg width="20" height="20" viewBox="0 0 21 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.8335 7.5H2.8335L9.2335 14.8578V19.9444L12.4335 21.5V14.8578L18.8335 7.5Z" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
             <div class="title">Grade</div>
-            <i class="fa-solid fa-chevron-down arrow"></i>
+            <svg class="arrow_down" width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 9.5L12.5 15.5L18.5 9.5" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="arrow_up" width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 15.5L12.5 9.5L18.5 15.5" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
-          <div class="filterBlockBody grade-grid" id="gradeFiters">
+          <div class="filterBlockBody" id="gradeFiters">
             <div class="gradeCheckbox grade0Background" onclick="toggleGrade(0)">
               <label for="grade0">Normal</label>
               <input type="checkbox" name="grade[]" value="0" id="grade0">
@@ -874,112 +947,198 @@
           </div>
         </div>
 
-        <!-- 2. Weapon Accordion -->
+        <!-- 4. Weapon Accordion -->
         <div class="filtersBlock">
           <div class="filterBlockHeader" onclick="toggleAccordion('weaponFiters', this)">
-            <i class="fa-solid fa-khanda icon"></i>
+            <div class="icon-svg">
+              <svg width="16" height="19" viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.5198 0.251099C12.3372 1.19813 11.41 1.75098 11.0125 2.14934C10.8846 2.27754 10.7662 2.50278 10.7414 2.68594C10.7166 2.86907 10.7414 2.97352 10.8857 3.07219L10.8869 3.07305L11.9118 3.78645C12.0419 3.87551 12.1233 3.85637 12.2741 3.75704C12.4248 3.65766 12.5766 3.44993 12.6273 3.29532C12.82 2.70704 13.0264 1.70524 13.5198 0.251099ZM6.2398 2.64067L7.11918 4.5909L7.59746 4.44793L8.62469 5.16305L9.42812 4.00895L8.4009 3.29376L8.36895 2.79563L6.2398 2.64067ZM14.5842 3.03422C14.2502 4.09231 13.8377 4.70461 13.3966 5.05348C13.7685 8.41899 13.1262 10.5061 11.981 11.9304C10.8291 13.363 9.22508 14.1047 7.76898 14.9289L7.75609 14.906C6.77895 17.4554 4.6266 18.2834 4.22434 18.6631C5.11301 18.4755 6.54246 18.1595 8.10375 17.6057L8.64719 16.6013L9.22375 17.0696L9.98105 16.1259L10.72 16.4633C12.4918 15.5151 14.1484 14.1943 15.1164 12.3459L13.9502 11.1298C13.9502 11.1298 14.8546 11.5063 15.4068 11.7239C16.0313 10.2121 16.2113 8.37844 15.6856 6.15282L14.9146 5.82161L15.4893 5.41497C15.2679 4.66426 14.9694 3.87157 14.5842 3.03422ZM10.5186 3.67325L10.2061 4.12208L11.1679 4.79161L11.4803 4.34278L10.5186 3.67325ZM9.80437 4.69918L5.56398 10.7904L6.52574 11.4599L10.7661 5.36872L9.80437 4.69918ZM12.726 5.40016C12.3283 5.51411 11.928 5.49559 11.557 5.46333L11.1793 6.00602C11.3568 6.00747 11.5539 6.00899 11.8468 6.02196L12.1211 6.03407L12.1758 6.30301C12.2984 6.90516 12.2685 7.20809 12.1834 7.60985L12.1304 7.8602L10.5205 8.02778L10.1785 7.44356L8.62207 9.67942C8.91324 9.95227 9.10305 10.3445 9.28215 10.7627C9.49785 11.2663 9.66953 11.8161 9.79828 12.2347L9.12613 12.4413C8.9984 12.026 8.83141 11.4963 8.63578 11.0395C8.50101 10.7249 8.33906 10.4495 8.20512 10.2783L7.63086 11.1033C8.06832 10.9027 8.19836 11.0277 8.22523 11.5484C8.27297 12.4725 8.1975 13.2751 8.03816 13.9738C9.31508 13.2677 10.5501 12.5879 11.433 11.4898C12.423 10.2586 13.0232 8.48141 12.726 5.40016ZM3.50664 6.56684L4.39641 8.50211L4.87469 8.35915L5.90191 9.07426L6.66332 7.98059L5.64523 7.25219L5.61727 6.74844L3.50664 6.56684ZM10.6979 6.69739L10.6211 6.80778L10.8983 7.28157L11.5449 7.21426C11.5698 7.06243 11.5686 6.93059 11.5357 6.71782C11.2296 6.71098 10.9996 6.71227 10.6979 6.69739ZM11.0964 8.5102C11.29 8.50825 11.4839 8.51786 11.672 8.53227L12.0459 8.56086L11.9932 8.93211C11.8699 9.80141 11.6303 10.5199 10.6487 11.1575L10.408 11.3137L10.2067 11.1092C9.93078 10.829 9.69938 10.4999 9.55852 10.1613C9.4177 9.82262 9.34355 9.43766 9.5582 9.10301C9.77703 8.76184 10.1523 8.62082 10.5241 8.55735C10.71 8.52563 10.903 8.51215 11.0964 8.5102ZM11.0741 9.2186C10.9183 9.22008 10.7705 9.22852 10.6423 9.25039C10.3691 9.29704 10.2103 9.38875 10.1501 9.48266C10.1314 9.51184 10.1121 9.66129 10.2078 9.89126C10.2732 10.0486 10.3831 10.2257 10.5145 10.3931C11.0043 10.0251 11.143 9.70465 11.2322 9.21922C11.1789 9.2184 11.126 9.21809 11.0741 9.2186ZM5.16223 11.3675L4.8498 11.8163L5.81156 12.4859L6.12398 12.037L5.16223 11.3675ZM4.44805 12.3934L-0.00976562 18.7969H1.4182L5.40988 13.0629L4.44805 12.3934Z" fill="white"/>
+              </svg>
+            </div>
             <div class="title">
               Weapon
               <span class="count-badge" id="badge-weapon">1824</span>
             </div>
-            <i class="fa-solid fa-chevron-down arrow"></i>
+            <svg class="arrow_down" width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 9.5L12.5 15.5L18.5 9.5" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="arrow_up" width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 15.5L12.5 9.5L18.5 15.5" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
           <div class="filterBlockBody" id="weaponFiters">
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="1"> Knives</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="2"> Swords</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="3"> Axes</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="4"> Maces</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="5"> Spears</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="6"> Bows</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="7"> Guns</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="8"> Launchers</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="9"> Staves</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="10"> Grenade Launchers</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="12"> Crossbows</label>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Knife <input type="checkbox" name="weaponFilter[]" value="1">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Sword <input type="checkbox" name="weaponFilter[]" value="2">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Axe <input type="checkbox" name="weaponFilter[]" value="3">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Mace <input type="checkbox" name="weaponFilter[]" value="4">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Spear <input type="checkbox" name="weaponFilter[]" value="5">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Bow <input type="checkbox" name="weaponFilter[]" value="6">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Firearm <input type="checkbox" name="weaponFilter[]" value="7">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Launcher <input type="checkbox" name="weaponFilter[]" value="8">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Throwing <input type="checkbox" name="weaponFilter[]" value="9">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Staff <input type="checkbox" name="weaponFilter[]" value="10">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Grenade Launcher <input type="checkbox" name="weaponFilter[]" value="12">
+            </div>
           </div>
         </div>
 
-        <!-- 3. Armor Accordion -->
+        <!-- 5. Armor Accordion -->
         <div class="filtersBlock">
           <div class="filterBlockHeader" onclick="toggleAccordion('armorFiters', this)">
-            <i class="fa-solid fa-shield-halved icon"></i>
+            <div class="icon-svg">
+              <svg width="19" height="17" viewBox="0 0 19 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.625 0.712646L7 3.21265L3.14969 3.76272L9.5 5.35022L15.8503 3.76272L12 3.21265L11.375 0.712646L10.3098 1.4228L9.84102 3.29792H9.15898L8.69016 1.42276L7.625 0.712646ZM2.21012 4.25249L0.125 6.33769L2 8.83769L3.00664 7.83104L4.04645 4.71163L2.21012 4.25249ZM16.7899 4.25249L14.9536 4.71159L15.9934 7.83101L17 8.83765L18.875 6.33765L16.7899 4.25249ZM4.73063 4.88265L3.94457 7.24081L4.48402 9.39886L9.14844 11.9902V5.98714L4.73063 4.88265ZM14.2694 4.88265L9.85156 5.98714V11.9902L14.5159 9.39886L15.0554 7.24081L14.2694 4.88265ZM5.125 10.5592V12.759L9.14844 13.9553V12.7944L5.125 10.5592ZM13.875 10.5592L9.85156 12.7945V13.9553L13.875 12.759V10.5592ZM5.125 13.51V15.7126L9.14844 16.2874V14.7063L5.125 13.51ZM13.875 13.51L9.85156 14.7063V16.2875L13.875 15.7127V13.51Z" fill="white"/>
+              </svg>
+            </div>
             <div class="title">
               Armor
               <span class="count-badge" id="badge-armor">2984</span>
             </div>
-            <i class="fa-solid fa-chevron-down arrow"></i>
+            <svg class="arrow_down" width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 9.5L12.5 15.5L18.5 9.5" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="arrow_up" width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 15.5L12.5 9.5L18.5 15.5" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
           <div class="filterBlockBody" id="armorFiters">
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ih"> Helmet</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="iu"> Upper</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="il"> Lower</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="is"> Shield</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ig"> Gloves</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="id"> Shoes</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ik"> Cape</label>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Helmet <input type="checkbox" name="itemFilter[]" value="ih">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Upper <input type="checkbox" name="itemFilter[]" value="iu">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Lower <input type="checkbox" name="itemFilter[]" value="il">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Shoes <input type="checkbox" name="itemFilter[]" value="is">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Gauntlets <input type="checkbox" name="itemFilter[]" value="ig">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Shield <input type="checkbox" name="itemFilter[]" value="id">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Booster <input type="checkbox" name="itemFilter[]" value="ik">
+            </div>
           </div>
         </div>
 
-        <!-- 4. Item Class Accordion -->
+        <!-- 6. Item Class Accordion -->
         <div class="filtersBlock">
-          <div class="filterBlockHeader" onclick="toggleAccordion('classFiters', this)">
-            <i class="fa-solid fa-crosshairs icon"></i>
+          <div class="filterBlockHeader" onclick="toggleAccordion('armorClassFiters', this)">
+            <div class="icon-svg"><i class="fa-solid fa-user-shield text-gray-300"></i></div>
             <div class="title">Item Class</div>
-            <i class="fa-solid fa-chevron-down arrow"></i>
+            <svg class="arrow_down" width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 9.5L12.5 15.5L18.5 9.5" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="arrow_up" width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 15.5L12.5 9.5L18.5 15.5" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
-          <div class="filterBlockBody" id="classFiters">
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="armor_class[]" value="1"> Warrior</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="armor_class[]" value="2"> Ranger</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="armor_class[]" value="3"> Spiritualist</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="armor_class[]" value="4"> Specialist</label>
+          <div class="filterBlockBody" id="armorClassFiters">
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Close combat <input type="checkbox" name="armor_class[]" value="1">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Range combat <input type="checkbox" name="armor_class[]" value="2">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Launcher <input type="checkbox" name="armor_class[]" value="3">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Force <input type="checkbox" name="armor_class[]" value="4">
+            </div>
           </div>
         </div>
 
-        <!-- 5. Jewelry Accordion -->
+        <!-- 7. Jewelry Accordion -->
         <div class="filtersBlock">
           <div class="filterBlockHeader" onclick="toggleAccordion('jewelryFiters', this)">
-            <i class="fa-solid fa-ring icon"></i>
+            <div class="icon-svg"><i class="fa-solid fa-ring text-gray-300"></i></div>
             <div class="title">
               Jewelry
               <span class="count-badge" id="badge-jewelry">344</span>
             </div>
-            <i class="fa-solid fa-chevron-down arrow"></i>
+            <svg class="arrow_down" width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 9.5L12.5 15.5L18.5 9.5" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="arrow_up" width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 15.5L12.5 9.5L18.5 15.5" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
           <div class="filterBlockBody" id="jewelryFiters">
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ii"> Ring</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ia"> Amulet</label>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Ring <input type="checkbox" name="itemFilter[]" value="ii">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Amulet <input type="checkbox" name="itemFilter[]" value="ia">
+            </div>
           </div>
         </div>
 
-        <!-- 6. Other Accordion -->
+        <!-- 8. Other Accordion -->
         <div class="filtersBlock">
           <div class="filterBlockHeader" onclick="toggleAccordion('otherFiters', this)">
-            <i class="fa-solid fa-gem icon"></i>
+            <div class="icon-svg"><i class="fa-solid fa-gem text-gray-300"></i></div>
             <div class="title">
               Other
               <span class="count-badge" id="badge-other">1275</span>
             </div>
-            <i class="fa-solid fa-chevron-down arrow"></i>
+            <svg class="arrow_down" width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 9.5L12.5 15.5L18.5 9.5" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="arrow_up" width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 15.5L12.5 9.5L18.5 15.5" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
           <div class="filterBlockBody" id="otherFiters">
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ic"> Force</label>
-            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ir"> Resources</label>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Force <input type="checkbox" name="itemFilter[]" value="ic">
+            </div>
+            <div class="itemTypeComponentCheckbox" onclick="toggleFilterItem(this)">
+              Resources <input type="checkbox" name="itemFilter[]" value="ir">
+            </div>
           </div>
         </div>
 
-        <!-- Sidebar Action Buttons -->
+        <!-- 9. Sidebar Actions -->
         <div class="filterSubmit">
-          <button id="searchByFilters" onclick="applyLocalFilters()" type="button">
+          <button id="searchByFilters" onclick="applyLocalFilters()" type="button" title="Filtra os itens atualmente salvos no banco de dados">
             <i class="fa-solid fa-magnifying-glass"></i> Begin search
           </button>
           
-          <div id="resetFilters" onclick="resetAllFilters()">
+          <div id="resetFilters" onclick="resetAllFilters()" title="Limpa todos os filtros selecionados">
             Reset filters
           </div>
 
-          <!-- PROMINENT BUTTON: SCRAPE COM ESSES FILTROS -->
+          <!-- PROMINENT BUTTON: INICIAR SCRAPING COM ESTES FILTROS -->
           <button id="scrapeWithFiltersBtn" onclick="triggerScrapeWithActiveFilters()" type="button">
-            <i class="fa-solid fa-bolt"></i> Scrapar com estes Filtros
+            <div><i class="fa-solid fa-bolt mr-1"></i> Iniciar Scraping</div>
+            <span class="subtext">Coleta com os filtros acima</span>
           </button>
         </div>
 
@@ -995,9 +1154,25 @@
       <div id="scrapingBanner" class="scraping-banner hidden">
         <div style="display: flex; align-items: center; gap: 10px;">
           <i class="fa-solid fa-circle-notch fa-spin text-lg"></i>
-          <span><strong>Web Scraping em andamento no Cerberus Games...</strong> Coletando itens filtrados diretamente do Web-Auction e Fórum.</span>
+          <div>
+            <strong>Web Scraping em andamento no Cerberus Games...</strong>
+            <div style="font-size: 11px; opacity: 0.9;" id="scrapingBannerText">Coletando itens com os filtros configurados e gravando no MariaDB.</div>
+          </div>
         </div>
-        <span style="font-size: 11px; opacity: 0.8;">Atualizando MariaDB</span>
+        <span style="font-size: 11px; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 3px;">Status: Gravando no Banco</span>
+      </div>
+
+      <!-- Active Filter Pills Bar -->
+      <div id="activeFilterBar" class="active-filter-bar">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-weight: 700; color: #cbd5e1;"><i class="fa-solid fa-sliders mr-1 text-purple-400"></i> Filtros Ativos:</span>
+          <div class="active-filter-tags" id="activeFilterTags">
+            <span class="filter-pill">Nenhum (Todos os itens)</span>
+          </div>
+        </div>
+        <div>
+          Total Encontrado: <strong id="kpi-filtered" class="text-white">0 itens</strong>
+        </div>
       </div>
 
       <!-- Quick Metrics Overview -->
@@ -1006,7 +1181,7 @@
           <i class="fa-solid fa-boxes-stacked text-purple-400"></i> Total no Banco: <strong id="kpi-total" class="text-white ml-1">0</strong>
         </div>
         <div class="btn-top" style="cursor: default;">
-          <i class="fa-solid fa-filter text-indigo-400"></i> Exibindo: <strong id="kpi-filtered" class="text-white ml-1">0 itens</strong>
+          <i class="fa-solid fa-server text-cyan-400"></i> Servidor Ativo: <strong id="kpi-server" class="text-white ml-1">FORCE &amp; STEEL</strong>
         </div>
         <div class="btn-top" style="cursor: default;">
           <i class="fa-solid fa-clock-rotate-left text-blue-400"></i> Último Scrape: <span id="kpi-last-scrape" class="ml-1 text-gray-300">-</span>
@@ -1060,7 +1235,7 @@
         <i class="fa-solid fa-xmark text-gray-400 hover:text-white cursor-pointer" onclick="closeCookieModal()"></i>
       </div>
       <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">
-        A conta <strong class="text-white">teste1</strong> já está configurada para login automático. Se preferir usar outro cookie de sessão (<code style="color: #a78bfa;">xf_user</code>):
+        A conta <strong class="text-white">teste1</strong> já está autenticando automaticamente. Se você desejar injetar um cookie customizado de outra conta (<code style="color: #a78bfa;">xf_user</code>):
       </p>
       <textarea id="cookieInput" rows="3" placeholder="xf_user=...; xf_session=..." style="width: 100%; padding: 8px; font-size: 11px; background: #1a1921; border: 1px solid #383546; border-radius: 4px; color: #fff; font-family: monospace; margin-bottom: 12px;"></textarea>
       <div style="display: flex; justify-content: flex-end; gap: 8px;">
@@ -1082,7 +1257,8 @@
     async function init() {
       await loadStats();
       await loadItems(1);
-      setInterval(checkScrapeStatus, 8000);
+      updateFilterSummaryDisplay();
+      setInterval(checkScrapeStatus, 6000);
     }
 
     // Toggle Accordion in Sidebar
@@ -1093,11 +1269,22 @@
       headerEl.classList.toggle('open');
     }
 
-    // Grade Checkbox
+    // Grade Checkbox Toggle
     function toggleGrade(val) {
       const cb = document.getElementById('grade' + val);
       if (cb) {
         cb.checked = !cb.checked;
+        updateFilterSummaryDisplay();
+      }
+    }
+
+    // Generic Component Checkbox Click
+    function toggleFilterItem(el) {
+      const cb = el.querySelector('input');
+      if (cb) {
+        cb.checked = !cb.checked;
+        el.classList.toggle('active', cb.checked);
+        updateFilterSummaryDisplay();
       }
     }
 
@@ -1106,10 +1293,12 @@
       el.classList.toggle('active');
       const cb = el.querySelector('input');
       if (cb) cb.checked = el.classList.contains('active');
+      updateFilterSummaryDisplay();
     }
 
     function filterNumbersOnly(inp) {
       inp.value = inp.value.replace(/[^0-9]/g, '');
+      updateFilterSummaryDisplay();
     }
 
     // Switch between Grid and Table View
@@ -1169,30 +1358,77 @@
       };
     }
 
+    // Update Filter Summary Bar
+    function updateFilterSummaryDisplay() {
+      const f = getActiveFilters();
+      const container = document.getElementById('activeFilterTags');
+      const pills = [];
+
+      if (f.srv === '1') pills.push('<span class="filter-pill"><i class="fa-solid fa-server text-cyan-400"></i> Force&Steel</span>');
+      else if (f.srv === '0') pills.push('<span class="filter-pill"><i class="fa-solid fa-server text-amber-400"></i> Stage Era</span>');
+
+      if (f.race.length > 0) {
+        f.race.forEach(r => {
+          const color = r === 'bellato' ? '#eab308' : (r === 'cora' ? '#c084fc' : '#ef4444');
+          pills.push(`<span class="filter-pill" style="border-color:${color}; color:${color}; font-weight:700;"><i class="fa-solid fa-shield"></i> ${r.toUpperCase()}</span>`);
+        });
+      }
+
+      if (f.levelMin || f.levelMax) {
+        pills.push(`<span class="filter-pill"><i class="fa-solid fa-arrow-up-right-dots"></i> Lvl ${f.levelMin || '1'} - ${f.levelMax || '65'}</span>`);
+      }
+
+      if (f.grade.length > 0) pills.push(`<span class="filter-pill"><i class="fa-solid fa-filter"></i> ${f.grade.length} Grades</span>`);
+      if (f.weaponFilter.length > 0) pills.push(`<span class="filter-pill"><i class="fa-solid fa-khanda"></i> ${f.weaponFilter.length} Armas</span>`);
+      if (f.itemFilter.length > 0) pills.push(`<span class="filter-pill"><i class="fa-solid fa-shield-halved"></i> ${f.itemFilter.length} Armaduras/Joias</span>`);
+      if (f.armor_class.length > 0) pills.push(`<span class="filter-pill"><i class="fa-solid fa-user-shield"></i> ${f.armor_class.length} Classes</span>`);
+      if (f.itemName) pills.push(`<span class="filter-pill"><i class="fa-solid fa-magnifying-glass"></i> "${escapeHtml(f.itemName)}"</span>`);
+
+      if (pills.length === 0) {
+        container.innerHTML = '<span class="filter-pill">Nenhum (Todos os itens)</span>';
+      } else {
+        container.innerHTML = pills.join(' ');
+      }
+
+      const srvName = f.srv === '1' ? 'FORCE & STEEL' : (f.srv === '0' ? 'STAGE ERA' : 'AMBOS OS SERVIDORES');
+      document.getElementById('kpi-server').innerText = srvName;
+    }
+
     // Reset All Filters
     function resetAllFilters() {
       document.getElementById('race-bellato').classList.remove('active');
       document.getElementById('race-cora').classList.remove('active');
       document.getElementById('race-accretia').classList.remove('active');
-      document.querySelectorAll('#navSection input[type="checkbox"]').forEach(c => c.checked = false);
+      document.querySelectorAll('#navSection input[type="checkbox"]').forEach(c => {
+        c.checked = false;
+        if (c.parentElement.classList.contains('itemTypeComponentCheckbox')) {
+          c.parentElement.classList.remove('active');
+        }
+      });
       document.getElementById('levelMinInput').value = '';
       document.getElementById('levelMaxInput').value = '';
       document.getElementById('searchInput').value = '';
+      updateFilterSummaryDisplay();
       loadItems(1);
     }
 
     // Apply filters to local display
     function applyLocalFilters() {
+      updateFilterSummaryDisplay();
       loadItems(1);
     }
 
     function onFilterChange() {
+      updateFilterSummaryDisplay();
       loadItems(1);
     }
 
     function debounceSearch() {
       clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => { loadItems(1); }, 350);
+      debounceTimer = setTimeout(() => {
+        updateFilterSummaryDisplay();
+        loadItems(1);
+      }, 300);
     }
 
     // Set Source Tab
@@ -1206,20 +1442,23 @@
     // Trigger Scrape with Active Filters
     async function triggerScrapeWithActiveFilters() {
       const filters = getActiveFilters();
-      const srvName = filters.srv === '1' ? 'CERBERUS - FORCE&STEEL' : (filters.srv === '0' ? 'CERBERUS - STAGE ERA' : 'Ambos');
+      const srvName = filters.srv === '1' ? 'FORCE & STEEL' : (filters.srv === '0' ? 'STAGE ERA' : 'Ambos os Servidores');
       
-      let summary = `Servidor: ${srvName}`;
-      if (filters.race && filters.race.length > 0) summary += `\nRaças: ${filters.race.join(', ')}`;
-      if (filters.levelMin || filters.levelMax) summary += `\nNível: ${filters.levelMin || 1} a ${filters.levelMax || 65}`;
-      if (filters.grade && filters.grade.length > 0) summary += `\nGrades selecionadas: ${filters.grade.length}`;
-      if (filters.weaponFilter && filters.weaponFilter.length > 0) summary += `\nArmas selecionadas: ${filters.weaponFilter.length}`;
-      if (filters.itemFilter && filters.itemFilter.length > 0) summary += `\nArmaduras/Joias: ${filters.itemFilter.length}`;
+      let summaryLines = [`Servidor: ${srvName}`];
+      if (filters.race && filters.race.length > 0) summaryLines.push(`Raças: ${filters.race.join(', ').toUpperCase()}`);
+      if (filters.levelMin || filters.levelMax) summaryLines.push(`Nível: ${filters.levelMin || '1'} a ${filters.levelMax || '65'}`);
+      if (filters.grade && filters.grade.length > 0) summaryLines.push(`Grades: ${filters.grade.length} selecionadas`);
+      if (filters.weaponFilter && filters.weaponFilter.length > 0) summaryLines.push(`Armas: ${filters.weaponFilter.length} tipos selecionados`);
+      if (filters.itemFilter && filters.itemFilter.length > 0) summaryLines.push(`Armaduras/Joias: ${filters.itemFilter.length} tipos selecionados`);
+      if (filters.itemName) summaryLines.push(`Busca por nome: "${filters.itemName}"`);
 
-      if (!confirm(`Deseja iniciar o Scraping no Cerberus Games com estes filtros aplicados?\n\n${summary}`)) {
-        return;
-      }
+      const confirmMsg = `Deseja iniciar a coleta ao vivo no Cerberus Games com estes filtros?\n\n${summaryLines.join('\n')}\n\nO robô irá autenticar com a conta teste1 e gravar tudo no MariaDB.`;
+      if (!confirm(confirmMsg)) return;
 
-      document.getElementById('scrapingBanner').classList.remove('hidden');
+      const banner = document.getElementById('scrapingBanner');
+      const bannerText = document.getElementById('scrapingBannerText');
+      bannerText.innerText = `Coletando com filtros aplicados: ${summaryLines.join(' | ')}`;
+      banner.classList.remove('hidden');
 
       try {
         const res = await fetch('/api/scrape', {
@@ -1227,30 +1466,19 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             auction_pages: 5,
-            pages: 2,
+            pages: 0,
             fetch_details: false,
             filters: filters
           })
         });
         const data = await res.json();
-        alert('Robô iniciado com sucesso com seus filtros! O painel será atualizado em instantes.');
+        if (data.status === 'already_running') {
+          alert('Um scraping já está em execução no momento. Aguarde alguns segundos.');
+        } else {
+          alert('🚀 Robô iniciado com sucesso com seus filtros! Os itens serão atualizados automaticamente na tela assim que gravados.');
+        }
       } catch (err) {
-        alert('Erro ao disparar scraper: ' + err);
-      }
-    }
-
-    async function triggerQuickScrape() {
-      if (!confirm('Deseja iniciar uma varredura completa do mercado agora?')) return;
-      document.getElementById('scrapingBanner').classList.remove('hidden');
-      try {
-        await fetch('/api/scrape', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pages: 2, auction_pages: 5, fetch_details: false })
-        });
-        alert('Scraping iniciado em segundo plano!');
-      } catch (err) {
-        alert('Erro ao disparar: ' + err);
+        alert('Erro ao disparar scraping: ' + err);
       }
     }
 
@@ -1307,14 +1535,14 @@
         currentItems = data.items || [];
         totalPages = data.total_pages || 1;
 
-        document.getElementById('kpi-filtered').innerText = `${data.total} itens`;
+        document.getElementById('kpi-filtered').innerText = `${data.total.toLocaleString()} itens`;
         document.getElementById('pageInfo').innerText = `Página ${currentPage} de ${totalPages}`;
         document.getElementById('btnPrevPage').disabled = currentPage <= 1;
         document.getElementById('btnNextPage').disabled = currentPage >= totalPages;
 
         if (currentItems.length === 0) {
-          grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: #94a3b8;">Nenhum item encontrado com os filtros atuais. Clique em "Scrapar com estes Filtros" para buscar ao vivo no site.</div>';
-          tBody.innerHTML = '<tr><td colspan="8" style="padding: 20px; text-align: center; color: #94a3b8;">Nenhum item encontrado.</td></tr>';
+          grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 50px 20px; text-align: center; color: #94a3b8; background: #201f29; border-radius: 4px; border: 1px dashed #3a3848;"><i class="fa-solid fa-filter text-2xl mb-2 text-purple-400"></i><p style="font-weight:700; font-size:15px; margin-bottom:6px;">Nenhum item encontrado no banco com os filtros selecionados.</p><p style="font-size:12px; color:#64748b; margin-bottom:14px;">Você pode coletar agora mesmo estes itens diretamente no site com um clique:</p><button onclick="triggerScrapeWithActiveFilters()" class="btn-top btn-accent"><i class="fa-solid fa-bolt"></i> Iniciar Scraping destes Filtros</button></div>';
+          tBody.innerHTML = '<tr><td colspan="8" style="padding: 25px; text-align: center; color: #94a3b8;">Nenhum item encontrado no banco com os filtros selecionados.</td></tr>';
           return;
         }
 
@@ -1352,7 +1580,7 @@
                 </div>
               </div>
 
-              <!-- Inline Details (Expandable) -->
+              <!-- Inline Details Box -->
               <div class="inline-details-box" id="details-box-${idx}">
 ${escapeHtml(item.description || item.title)}
               </div>
@@ -1435,7 +1663,7 @@ ${escapeHtml(item.description || item.title)}
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ cookie: val })
         });
-        alert('Cookie atualizado!');
+        alert('Cookie atualizado com sucesso!');
         closeCookieModal();
       } catch (e) { alert('Erro: ' + e); }
     }

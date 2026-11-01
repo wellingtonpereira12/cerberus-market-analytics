@@ -197,8 +197,16 @@ class CerberusScraper:
 
                     # Arrays in post_data
                     if custom_filters.get('race'):
-                        races = custom_filters['race'] if isinstance(custom_filters['race'], list) else [custom_filters['race']]
-                        post_data['race[]'] = races
+                        raw_races = custom_filters['race'] if isinstance(custom_filters['race'], list) else [custom_filters['race']]
+                        norm_races = []
+                        for r in raw_races:
+                            rl = str(r).strip().lower()
+                            if rl in ['accretia', 'acretia']:
+                                norm_races.append('acretia')
+                            elif rl in ['bellato', 'cora']:
+                                norm_races.append(rl)
+                        if norm_races:
+                            post_data['race[]'] = norm_races
 
                     if custom_filters.get('grade'):
                         grades = custom_filters['grade'] if isinstance(custom_filters['grade'], list) else [custom_filters['grade']]
@@ -390,7 +398,7 @@ class CerberusScraper:
         logger.info(f"Finished forum {section['name']}: {len(items)} items scraped.")
         return items
 
-    def run(self, max_forum_pages=2, max_auction_pages=5, fetch_details=False, custom_filters=None, include_forum=True):
+    def run(self, max_forum_pages=2, max_auction_pages=5, fetch_details=False, custom_filters=None, include_forum=True, **kwargs):
         log_id = self.db.start_log(source="filtered" if custom_filters else "all")
         all_items = []
         errors = []

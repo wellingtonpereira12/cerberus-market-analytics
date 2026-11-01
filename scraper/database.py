@@ -170,11 +170,22 @@ class CerberusDatabase:
 
             # Race filter (can be comma-separated or list)
             if race and race.lower() != 'all':
-                races = [r.strip().capitalize() for r in race.split(",") if r.strip()]
+                raw_races = [r.strip().lower() for r in race.split(",") if r.strip()]
+                races = set()
+                for r in raw_races:
+                    if r in ['accretia', 'acretia']:
+                        races.add('Accretia')
+                        races.add('Acretia')
+                    elif r == 'bellato':
+                        races.add('Bellato')
+                    elif r == 'cora':
+                        races.add('Cora')
+                    else:
+                        races.add(r.capitalize())
                 if races:
                     placeholders = ",".join(["%s"] * len(races))
                     where_clauses.append(f"race IN ({placeholders})")
-                    params.extend(races)
+                    params.extend(list(races))
 
             # Category filter
             if category and category.lower() != 'all':
@@ -197,11 +208,11 @@ class CerberusDatabase:
 
             # Level range
             if levelMin:
-                where_clauses.append("(CAST(REGEXP_SUBSTR(title, '[0-9]+') AS UNSIGNED) >= %s OR title NOT REGEXP '[0-9]+')")
+                where_clauses.append("(CAST(COALESCE(NULLIF(JSON_UNQUOTE(JSON_EXTRACT(extra_data, '$.level')), ''), REGEXP_SUBSTR(title, '[0-9]+'), '0') AS UNSIGNED) >= %s)")
                 params.append(int(levelMin))
 
             if levelMax:
-                where_clauses.append("(CAST(REGEXP_SUBSTR(title, '[0-9]+') AS UNSIGNED) <= %s OR title NOT REGEXP '[0-9]+')")
+                where_clauses.append("(CAST(COALESCE(NULLIF(JSON_UNQUOTE(JSON_EXTRACT(extra_data, '$.level')), ''), REGEXP_SUBSTR(title, '[0-9]+'), '0') AS UNSIGNED) <= %s)")
                 params.append(int(levelMax))
 
             where_sql = " AND ".join(where_clauses)

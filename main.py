@@ -8,13 +8,23 @@ import time
 from scraper.database import CerberusDatabase
 from scraper.cerberus_scraper import CerberusScraper
 
-def run_scraper_job(pages=0, auction_pages=10, details=False, race=None, category=None, search=None, source="web_auction", server=None):
+def run_scraper_job(pages=0, auction_pages=10, details=False, race=None, category=None, search=None, source="web_auction", server=None, custom_filters=None):
+    custom_filters = custom_filters or {}
+    if race and race != 'All':
+        custom_filters['race'] = [race.lower()] if race.lower() in ['bellato', 'cora', 'acretia', 'accretia'] else [race]
+    if category and category != 'All':
+        custom_filters['category'] = category
+    if search:
+        custom_filters['itemName'] = search
+    if server and server != 'All':
+        custom_filters['srv'] = str(server)
+
     filters_info = []
-    if race and race != 'All': filters_info.append(f"Raça={race}")
-    if category and category != 'All': filters_info.append(f"Categoria={category}")
-    if search: filters_info.append(f"Busca='{search}'")
+    if custom_filters.get('race'): filters_info.append(f"Raça={custom_filters['race']}")
+    if custom_filters.get('category'): filters_info.append(f"Categoria={custom_filters['category']}")
+    if custom_filters.get('itemName'): filters_info.append(f"Busca='{custom_filters['itemName']}'")
     if source and source != 'All': filters_info.append(f"Origem={source}")
-    if server and server != 'All': filters_info.append(f"Servidor={server}")
+    if custom_filters.get('srv'): filters_info.append(f"Servidor={custom_filters['srv']}")
 
     filter_str = f" [Filtros: {', '.join(filters_info)}]" if filters_info else " [Apenas Web-Auction /market]"
     print(f"🚀 Iniciando job de Web Scraping do Cerberus Games (Apenas Web-Auction){filter_str}...")
@@ -25,13 +35,10 @@ def run_scraper_job(pages=0, auction_pages=10, details=False, race=None, categor
         max_forum_pages=pages,
         max_auction_pages=auction_pages,
         fetch_details=details,
-        filter_race=race,
-        filter_category=category,
-        filter_search=search,
-        filter_source=source,
-        filter_server=server
+        custom_filters=custom_filters if custom_filters else None,
+        include_forum=(source != "web_auction")
     )
-    print(f"✅ Scraping concluído: {result['items_saved']} itens do Web-Auction salvos no MariaDB.")
+    print(f"✅ Scraping concluído: {result.get('items_saved', 0)} itens salvos no MariaDB.")
     return result
 
 def periodic_scraper_worker(interval_seconds=3600):
@@ -53,7 +60,7 @@ def start_server(host="0.0.0.0", port=3150, enable_periodic=True):
     if stats["total_items"] == 0:
         print("ℹ️ Banco de dados vazio. Executando primeira carga de dados inicial (Web-Auction)...")
         try:
-            run_scraper_job(pages=0, auction_pages=10, details=False, source="web_auction")
+            run_scraper_job(pages=0, auction_pages=5, details=False, source="web_auction")
         except Exception as e:
             print(f"⚠️ Aviso na carga inicial: {e}")
 
@@ -105,7 +112,6 @@ def main():
         start_server(host=args.host, port=args.port)
     else:
         start_server(host=args.host, port=args.port)
-
 
 if __name__ == "__main__":
     main()
