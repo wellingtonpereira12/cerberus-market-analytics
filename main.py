@@ -8,12 +8,29 @@ import time
 from scraper.database import CerberusDatabase
 from scraper.cerberus_scraper import CerberusScraper
 
-def run_scraper_job(pages=2, auction_pages=5, details=False):
-    print("🚀 Iniciando job de Web Scraping do Cerberus Games (Web Auction + Fórum)...")
+def run_scraper_job(pages=2, auction_pages=5, details=False, race=None, category=None, search=None, source=None, server=None):
+    filters_info = []
+    if race and race != 'All': filters_info.append(f"Raça={race}")
+    if category and category != 'All': filters_info.append(f"Categoria={category}")
+    if search: filters_info.append(f"Busca='{search}'")
+    if source and source != 'All': filters_info.append(f"Origem={source}")
+    if server and server != 'All': filters_info.append(f"Servidor={server}")
+
+    filter_str = f" [Filtros: {', '.join(filters_info)}]" if filters_info else " [Sem filtros prévios]"
+    print(f"🚀 Iniciando job de Web Scraping do Cerberus Games{filter_str}...")
     db = CerberusDatabase()
     db.init_tables()
     scraper = CerberusScraper(db=db)
-    result = scraper.run(max_forum_pages=pages, max_auction_pages=auction_pages, fetch_details=details)
+    result = scraper.run(
+        max_forum_pages=pages,
+        max_auction_pages=auction_pages,
+        fetch_details=details,
+        filter_race=race,
+        filter_category=category,
+        filter_search=search,
+        filter_source=source,
+        filter_server=server
+    )
     print(f"✅ Scraping concluído: {result['items_saved']} itens salvos no MariaDB (Sendo {result.get('auction_items', 0)} do Web-Auction).")
     return result
 
@@ -53,15 +70,38 @@ def main():
     parser.add_argument("--pages", type=int, default=2, help="Número de páginas para scraping por seção de fórum")
     parser.add_argument("--auction-pages", type=int, default=5, help="Número de páginas para scraping do Web-Auction")
     parser.add_argument("--details", action="store_true", help="Coleta detalhes aprofundados de cada post")
+    parser.add_argument("--race", default=None, choices=["All", "Bellato", "Cora", "Accretia"], help="Filtro prévio por raça")
+    parser.add_argument("--category", default=None, help="Filtro prévio por categoria (Character, Weapon, Armor, etc.)")
+    parser.add_argument("--search", default=None, help="Palavra-chave ou termo para filtrar durante a coleta")
+    parser.add_argument("--source", default=None, choices=["All", "web_auction", "forum_marketplace"], help="Origem da coleta")
+    parser.add_argument("--server", default=None, help="ID do servidor (1 para Force & Steel, 0 para Stage Era)")
     parser.add_argument("--port", type=int, default=3150, help="Porta do servidor web (padrão 3150)")
     parser.add_argument("--host", default="0.0.0.0", help="Host do servidor web")
 
     args = parser.parse_args()
 
     if args.action == "scrape":
-        run_scraper_job(pages=args.pages, auction_pages=args.auction_pages, details=args.details)
+        run_scraper_job(
+            pages=args.pages,
+            auction_pages=args.auction_pages,
+            details=args.details,
+            race=args.race,
+            category=args.category,
+            search=args.search,
+            source=args.source,
+            server=args.server
+        )
     elif args.action == "both":
-        run_scraper_job(pages=args.pages, auction_pages=args.auction_pages, details=args.details)
+        run_scraper_job(
+            pages=args.pages,
+            auction_pages=args.auction_pages,
+            details=args.details,
+            race=args.race,
+            category=args.category,
+            search=args.search,
+            source=args.source,
+            server=args.server
+        )
         start_server(host=args.host, port=args.port)
     else:
         start_server(host=args.host, port=args.port)

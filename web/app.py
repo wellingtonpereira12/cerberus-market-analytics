@@ -38,6 +38,11 @@ class ScrapeTriggerPayload(BaseModel):
     pages: Optional[int] = 2
     auction_pages: Optional[int] = 5
     fetch_details: Optional[bool] = False
+    race: Optional[str] = None
+    category: Optional[str] = None
+    search: Optional[str] = None
+    source: Optional[str] = None
+    server: Optional[str] = None
 
 @app.on_event("startup")
 def startup_event():
@@ -83,11 +88,23 @@ def get_stats():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def run_scraper_task(pages: int, auction_pages: int, fetch_details: bool):
+def run_scraper_task(pages: int, auction_pages: int, fetch_details: bool,
+                     race: Optional[str] = None, category: Optional[str] = None,
+                     search: Optional[str] = None, source: Optional[str] = None,
+                     server: Optional[str] = None):
     global is_scraping
     is_scraping = True
     try:
-        scraper_instance.run(max_forum_pages=pages, max_auction_pages=auction_pages, fetch_details=fetch_details)
+        scraper_instance.run(
+            max_forum_pages=pages,
+            max_auction_pages=auction_pages,
+            fetch_details=fetch_details,
+            filter_race=race,
+            filter_category=category,
+            filter_search=search,
+            filter_source=source,
+            filter_server=server
+        )
     except Exception as e:
         print(f"Background scraper error: {e}")
     finally:
@@ -99,8 +116,30 @@ def trigger_scrape(payload: ScrapeTriggerPayload, background_tasks: BackgroundTa
     if is_scraping:
         return {"status": "already_running", "message": "Scraping is already in progress"}
     
-    background_tasks.add_task(run_scraper_task, payload.pages or 2, payload.auction_pages or 5, payload.fetch_details or False)
-    return {"status": "started", "message": f"Scraping started (Forum: {payload.pages or 2} pages, Auction: {payload.auction_pages or 5} pages)"}
+    background_tasks.add_task(
+        run_scraper_task,
+        payload.pages or 2,
+        payload.auction_pages or 5,
+        payload.fetch_details or False,
+        payload.race,
+        payload.category,
+        payload.search,
+        payload.source,
+        payload.server
+    )
+    
+    filters_info = []
+    if payload.race and payload.race != 'All': filters_info.append(f"Raça={payload.race}")
+    if payload.category and payload.category != 'All': filters_info.append(f"Categoria={payload.category}")
+    if payload.search: filters_info.append(f"Busca='{payload.search}'")
+    if payload.source and payload.source != 'All': filters_info.append(f"Origem={payload.source}")
+    if payload.server and payload.server != 'All': filters_info.append(f"Servidor={payload.server}")
+
+    filter_str = f" com filtros: {', '.join(filters_info)}" if filters_info else " sem filtros prévios"
+    return {
+        "status": "started",
+        "message": f"Scraping iniciado em background{filter_str} (Fórum: {payload.pages or 2} págs, Auction: {payload.auction_pages or 5} págs)"
+    }
 
 
 @app.post("/api/cookie")
