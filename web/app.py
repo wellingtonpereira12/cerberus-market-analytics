@@ -4,7 +4,7 @@ import json
 import csv
 import io
 import asyncio
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, Query, BackgroundTasks, HTTPException
 from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from scraper.database import CerberusDatabase
 from scraper.cerberus_scraper import CerberusScraper
 
-app = FastAPI(title="Cerberus Market Analytics API", version="1.0.0")
+app = FastAPI(title="Cerberus Market Analytics API", version="2.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,6 +27,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+static_path = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_path):
+    app.mount("/static", StaticFiles(directory=static_path), name="static")
+
 db = CerberusDatabase()
 scraper_instance = CerberusScraper(db=db)
 is_scraping = False
@@ -35,14 +39,10 @@ class CookiePayload(BaseModel):
     cookie: str
 
 class ScrapeTriggerPayload(BaseModel):
-    pages: Optional[int] = 0
+    pages: Optional[int] = 2
     auction_pages: Optional[int] = 5
     fetch_details: Optional[bool] = False
-    race: Optional[str] = None
-    category: Optional[str] = None
-    search: Optional[str] = None
-    source: Optional[str] = "web_auction"
-    server: Optional[str] = None
+    filters: Optional[Dict[str, Any]] = None
 
 @app.on_event("startup")
 def startup_event():
@@ -58,11 +58,13 @@ def health_check():
 @app.get("/api/items")
 def get_items(
     page: int = Query(1, ge=1),
-    per_page: int = Query(25, ge=1, le=100),
+    per_page: int = Query(24, ge=1, le=100),
     race: Optional[str] = None,
     category: Optional[str] = None,
     source: Optional[str] = None,
     search: Optional[str] = None,
+    levelMin: Optional[int] = None,
+    levelMax: Optional[int] = None,
     sort: Optional[str] = "scraped_at DESC"
 ):
     try:
@@ -73,6 +75,8 @@ def get_items(
             category=category,
             source=source,
             search=search,
+            levelMin=levelMin,
+            levelMax=levelMax,
             sort=sort
         )
         return data
@@ -88,10 +92,7 @@ def get_stats():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def run_scraper_task(pages: int, auction_pages: int, fetch_details: bool,
-                     race: Optional[str] = None, category: Optional[str] = None,
-                     search: Optional[str] = None, source: Optional[str] = None,
-                     server: Optional[str] = None):
+def run_scraper_task(pages: int, auction_pages: int, fetch_details: bool, custom_filters: Optional[dict]):
     global is_scraping
     is_scraping = True
     try:
@@ -99,11 +100,8 @@ def run_scraper_task(pages: int, auction_pages: int, fetch_details: bool,
             max_forum_pages=pages,
             max_auction_pages=auction_pages,
             fetch_details=fetch_details,
-            filter_race=race,
-            filter_category=category,
-            filter_search=search,
-            filter_source=source,
-            filter_server=server
+            custom_filters=custom_filters,
+            include_forum=(custom_filters is None)
         )
     except Exception as e:
         print(f"Background scraper error: {e}")
@@ -114,43 +112,22 @@ def run_scraper_task(pages: int, auction_pages: int, fetch_details: bool,
 def trigger_scrape(payload: ScrapeTriggerPayload, background_tasks: BackgroundTasks):
     global is_scraping
     if is_scraping:
-        return {"status": "already_running", "message": "Scraping is already in progress"}
+        return {"status": "already_running", "message": "Scraping já está em execução no momento."}
     
-    chosen_source = payload.source or "web_auction"
     background_tasks.add_task(
         run_scraper_task,
-        payload.pages if chosen_source in ['all', 'forum_marketplace'] else 0,
+        payload.pages or 2,
         payload.auction_pages or 5,
         payload.fetch_details or False,
-        payload.race,
-        payload.category,
-        payload.search,
-        chosen_source,
-        payload.server
+        payload.filters
     )
-    
-    filters_info = []
-    if payload.race and payload.race != 'All': filters_info.append(f"Raça={payload.race}")
-    if payload.category and payload.category != 'All': filters_info.append(f"Categoria={payload.category}")
-    if payload.search: filters_info.append(f"Busca='{payload.search}'")
-    if payload.server and payload.server != 'All': filters_info.append(f"Servidor={payload.server}")
-
-    filter_str = f" com filtros: {', '.join(filters_info)}" if filters_info else ""
-    if chosen_source == "web_auction":
-        msg = f"Scraping do Web-Auction (/market) iniciado com {payload.auction_pages or 5} páginas{filter_str} (Fórum desativado)."
-    else:
-        msg = f"Scraping iniciado em background ({chosen_source}){filter_str}."
-
-    return {
-        "status": "started",
-        "message": msg
-    }
-
+    msg = "Scraping com filtros iniciado em segundo plano!" if payload.filters else f"Scraping completo iniciado (Fórum: {payload.pages or 2} pgs, Leilão: {payload.auction_pages or 5} pgs)"
+    return {"status": "started", "message": msg, "applied_filters": payload.filters}
 
 @app.post("/api/cookie")
 def set_cookie(payload: CookiePayload):
     scraper_instance.set_cookie(payload.cookie)
-    return {"status": "success", "message": "Cookie updated successfully for Web-Auction scraper"}
+    return {"status": "success", "message": "Cookie atualizado com sucesso para o Web-Auction!"}
 
 @app.get("/api/export/csv")
 def export_csv():

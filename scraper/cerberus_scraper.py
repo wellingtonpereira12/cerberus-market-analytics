@@ -53,7 +53,7 @@ class CerberusScraper:
             headers=DEFAULT_HEADERS,
             follow_redirects=True,
             verify=False,
-            timeout=25.0
+            timeout=30.0
         )
 
         if self.cookie:
@@ -135,31 +135,24 @@ class CerberusScraper:
             return f"{m.group(1).strip()} {unit}", num_val, unit
         return "Negotiable", None, "Cash Shop"
 
-    def matches_filter(self, item, race=None, category=None, search=None):
-        """Verifies if an item matches the pre-scrape filters before saving/processing."""
-        if race and race.lower() not in ['all', 'todas', 'todos', '']:
-            item_race = (item.get('race') or '').lower()
-            if item_race != 'all' and item_race != race.lower():
-                return False
-
-        if category and category.lower() not in ['all', 'todas', 'todos', '']:
-            item_cat = (item.get('category') or '').lower()
-            if item_cat != category.lower():
-                return False
-
-        if search and search.strip():
-            q = search.lower().strip()
-            searchable = f"{item.get('title', '')} {item.get('description', '')} {item.get('seller', '')}".lower()
-            for term in q.split():
-                if term not in searchable:
-                    return False
-
-        return True
-
-    def scrape_web_auction(self, max_pages=5, filter_race=None, filter_category=None, filter_search=None, filter_server=None):
-        """Scrapes https://cerberus-games.com/market/items applying pre-filters in-flight."""
+    def scrape_web_auction(self, max_pages=5, custom_filters=None):
+        """
+        Scrapes https://cerberus-games.com/market/items using authenticated session.
+        Accepts custom_filters:
+          - srv: '1' or '0' (or None for both)
+          - race: list of ['bellato', 'cora', 'acretia']
+          - levelMin: str / int
+          - levelMax: str / int
+          - grade: list of ['0', '1', '2', ...]
+          - weaponFilter: list of ['1', '2', ...]
+          - itemFilter: list of ['ih', 'iu', ...]
+          - armor_class: list of ['1', '2', ...]
+          - itemName: str
+          - sort: 'datedown', 'costdown', 'costup', etc.
+        """
         logger.info("Accessing Web-Auction at https://cerberus-games.com/market/items...")
         items = []
+        custom_filters = custom_filters or {}
 
         try:
             resp = self.client.get(MARKET_URL)
@@ -175,22 +168,54 @@ class CerberusScraper:
             token_match = re.search(r'name="_xfToken"\s+value="([^"]+)"', resp.text)
             csrf_token = token_match.group(1) if token_match else None
 
-            # Server filter
-            servers_to_scrape = SERVERS
-            if filter_server and filter_server not in ['All', 'all', '']:
-                servers_to_scrape = [s for s in SERVERS if s['id'] == str(filter_server) or filter_server.lower() in s['name'].lower()]
-                if not servers_to_scrape:
-                    servers_to_scrape = SERVERS
+            # Determine servers to scrape
+            target_servers = SERVERS
+            requested_srv = custom_filters.get('srv')
+            if requested_srv is not None and str(requested_srv) != "":
+                target_servers = [s for s in SERVERS if s['id'] == str(requested_srv)]
+                if not target_servers:
+                    target_servers = SERVERS
 
-            for srv in servers_to_scrape:
-                logger.info(f"Crawling Web-Auction server: {srv['name']} (up to {max_pages} pages)...")
+            for srv in target_servers:
+                logger.info(f"Crawling Web-Auction server: {srv['name']} (up to {max_pages} pages, filters={custom_filters})...")
                 for page in range(1, max_pages + 1):
+                    # Build POST form data
                     post_data = {
                         '_xfToken': csrf_token,
                         'srv': srv['id'],
                         'page': str(page),
-                        'sort': 'datedown'
+                        'sort': custom_filters.get('sort') or 'datedown',
+                        'itemType': ''
                     }
+
+                    if custom_filters.get('levelMin'):
+                        post_data['levelMin'] = str(custom_filters['levelMin'])
+                    if custom_filters.get('levelMax'):
+                        post_data['levelMax'] = str(custom_filters['levelMax'])
+                    if custom_filters.get('itemName'):
+                        post_data['itemName'] = str(custom_filters['itemName'])
+
+                    # Arrays in post_data
+                    if custom_filters.get('race'):
+                        races = custom_filters['race'] if isinstance(custom_filters['race'], list) else [custom_filters['race']]
+                        post_data['race[]'] = races
+
+                    if custom_filters.get('grade'):
+                        grades = custom_filters['grade'] if isinstance(custom_filters['grade'], list) else [custom_filters['grade']]
+                        post_data['grade[]'] = [str(g) for g in grades]
+
+                    if custom_filters.get('weaponFilter'):
+                        wf = custom_filters['weaponFilter'] if isinstance(custom_filters['weaponFilter'], list) else [custom_filters['weaponFilter']]
+                        post_data['weaponFilter[]'] = [str(x) for x in wf]
+
+                    if custom_filters.get('itemFilter'):
+                        itf = custom_filters['itemFilter'] if isinstance(custom_filters['itemFilter'], list) else [custom_filters['itemFilter']]
+                        post_data['itemFilter[]'] = [str(x) for x in itf]
+
+                    if custom_filters.get('armor_class'):
+                        ac = custom_filters['armor_class'] if isinstance(custom_filters['armor_class'], list) else [custom_filters['armor_class']]
+                        post_data['armor_class[]'] = [str(x) for x in ac]
+
                     r = self.client.post(MARKET_URL, data=post_data)
                     if r.status_code != 200:
                         break
@@ -208,6 +233,14 @@ class CerberusScraper:
 
                             name_elem = b.select_one('.itemName')
                             title = name_elem.get_text(strip=True) if name_elem else "Unknown Item"
+
+                            # Grade class
+                            grade_class = "grade0"
+                            if name_elem:
+                                for c in name_elem.get('class', []):
+                                    if c.startswith('grade'):
+                                        grade_class = c
+                                        break
 
                             level_elem = b.select_one('.itemLevel')
                             level_text = level_elem.get_text(strip=True) if level_elem else ""
@@ -236,7 +269,7 @@ class CerberusScraper:
                             item_url = f"https://cerberus-games.com/market/?lot={lot_id}"
                             desc = f"{title} (Quantidade: {amount_text})\nNível: {level_text}\nPreço: {price_str}\nServidor: {srv['name']}\nDetalhes: {char_text}"
 
-                            candidate = {
+                            items.append({
                                 "source_type": "web_auction",
                                 "external_id": f"lot_{lot_id}",
                                 "title": f"{title} {level_text}".strip(),
@@ -256,24 +289,22 @@ class CerberusScraper:
                                     "lot_id": lot_id,
                                     "amount": amount_text,
                                     "level": level_text,
+                                    "grade_class": grade_class,
                                     "characteristics": char_text
                                 }
-                            }
-
-                            if self.matches_filter(candidate, race=filter_race, category=filter_category, search=filter_search):
-                                items.append(candidate)
+                            })
                         except Exception as e:
                             logger.error(f"Error parsing auction item: {e}")
 
                     time.sleep(0.3)
 
-            logger.info(f"Web-Auction scraping complete: {len(items)} filtered lots extracted.")
+            logger.info(f"Web-Auction scraping complete: {len(items)} lots extracted.")
             return items, "OK"
         except Exception as e:
             logger.error(f"Web-Auction scraping error: {e}")
             return items, str(e)
 
-    def scrape_forum_section(self, section, max_pages=3, fetch_details=False, filter_race=None, filter_category=None, filter_search=None):
+    def scrape_forum_section(self, section, max_pages=2, fetch_details=False):
         items = []
         base_sec_url = section["url"]
         logger.info(f"Scraping forum section: {section['name']} (up to {max_pages} pages)...")
@@ -328,7 +359,7 @@ class CerberusScraper:
                                         race = self.classify_race(description)
                             time.sleep(0.3)
 
-                        candidate = {
+                        items.append({
                             "source_type": "forum_marketplace",
                             "external_id": f"th_{thread_id}",
                             "title": raw_title,
@@ -347,10 +378,7 @@ class CerberusScraper:
                                 "section_id": section["id"],
                                 "post_date": post_date
                             }
-                        }
-
-                        if self.matches_filter(candidate, race=filter_race, category=filter_category, search=filter_search):
-                            items.append(candidate)
+                        })
                     except Exception as e:
                         logger.error(f"Error parsing forum thread: {e}")
 
@@ -359,62 +387,26 @@ class CerberusScraper:
                 logger.error(f"Error fetching forum page {page_url}: {e}")
                 break
 
-        logger.info(f"Finished forum {section['name']}: {len(items)} filtered items scraped.")
+        logger.info(f"Finished forum {section['name']}: {len(items)} items scraped.")
         return items
 
-    def run(self, max_forum_pages=0, max_auction_pages=5, fetch_details=False,
-            filter_race=None, filter_category=None, filter_search=None,
-            filter_source="web_auction", filter_server=None):
-
-        filter_desc = []
-        if filter_race and filter_race != 'All': filter_desc.append(f"Raça={filter_race}")
-        if filter_category and filter_category != 'All': filter_desc.append(f"Cat={filter_category}")
-        if filter_search: filter_desc.append(f"Busca='{filter_search}'")
-        if filter_source and filter_source != 'All': filter_desc.append(f"Origem={filter_source}")
-        if filter_server and filter_server != 'All': filter_desc.append(f"Servidor={filter_server}")
-        
-        log_source = f"Filtros: {', '.join(filter_desc)}" if filter_desc else "all (sem filtros)"
-        log_id = self.db.start_log(source=log_source)
+    def run(self, max_forum_pages=2, max_auction_pages=5, fetch_details=False, custom_filters=None, include_forum=True):
+        log_id = self.db.start_log(source="filtered" if custom_filters else "all")
         all_items = []
         errors = []
 
         try:
-            # 1. Scrape Web Auction (if not filtered to forum only)
-            if not filter_source or filter_source.lower() in ['all', 'todas', 'todos', 'web_auction', 'auction']:
-                auction_items, auction_msg = self.scrape_web_auction(
-                    max_pages=max_auction_pages,
-                    filter_race=filter_race,
-                    filter_category=filter_category,
-                    filter_search=filter_search,
-                    filter_server=filter_server
-                )
-                all_items.extend(auction_items)
-                if auction_msg != "OK":
-                    errors.append(f"Web Auction: {auction_msg}")
-            else:
-                auction_items = []
-                logger.info("Skipping Web-Auction due to source filter.")
+            # 1. Scrape Web Auction (Authenticated with teste1)
+            auction_items, auction_msg = self.scrape_web_auction(max_pages=max_auction_pages, custom_filters=custom_filters)
+            all_items.extend(auction_items)
+            if auction_msg != "OK":
+                errors.append(f"Web Auction: {auction_msg}")
 
-            # 2. Scrape Public Marketplace Forums (only if explicitly requested)
-            if filter_source and filter_source.lower() in ['forum_marketplace', 'forum', 'forums', 'all']:
-                sections_to_scrape = FORUM_SECTIONS
-                if filter_server == "1":
-                    sections_to_scrape = [s for s in FORUM_SECTIONS if s['id'] == "161"]
-                elif filter_server == "0":
-                    sections_to_scrape = [s for s in FORUM_SECTIONS if s['id'] == "144"]
-
-                for sec in sections_to_scrape:
-                    sec_items = self.scrape_forum_section(
-                        sec,
-                        max_pages=max_forum_pages,
-                        fetch_details=fetch_details,
-                        filter_race=filter_race,
-                        filter_category=filter_category,
-                        filter_search=filter_search
-                    )
+            # 2. Scrape Public Marketplace Forums if requested
+            if include_forum and not custom_filters:
+                for sec in FORUM_SECTIONS:
+                    sec_items = self.scrape_forum_section(sec, max_pages=max_forum_pages, fetch_details=fetch_details)
                     all_items.extend(sec_items)
-            else:
-                logger.info("Skipping Forum Scraping due to source filter.")
 
             # 3. Save to database
             saved_count = 0
@@ -425,26 +417,19 @@ class CerberusScraper:
                 except Exception as e:
                     logger.error(f"Failed to upsert item {item.get('title')}: {e}")
 
-            status_str = "success" if saved_count > 0 or not all_items else "warning"
+            status_str = "success" if saved_count > 0 else "warning"
             err_str = "; ".join(errors) if errors else None
             self.db.finish_log(log_id, items_found=len(all_items), items_saved=saved_count, status=status_str, error_message=err_str)
 
             # 4. Dump to JSON & CSV files
             self.export_dumps(all_items)
 
-            logger.info(f"Scrape filtrado concluído! Total: {len(all_items)}, Salvos: {saved_count} (Auction: {len(auction_items)})")
+            logger.info(f"Scrape completed! Total: {len(all_items)}, Saved to DB: {saved_count} (Auction: {len(auction_items)})")
             return {
                 "items_found": len(all_items),
                 "items_saved": saved_count,
                 "auction_items": len(auction_items),
                 "status": status_str,
-                "applied_filters": {
-                    "race": filter_race,
-                    "category": filter_category,
-                    "search": filter_search,
-                    "source": filter_source,
-                    "server": filter_server
-                },
                 "notes": errors
             }
 

@@ -1,566 +1,1305 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cerberus Games - Market Analytics & Scraper</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Cerberus Games - Market Analytics & Web-Auction</title>
+  
+  <!-- FontAwesome & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            cerberus: {
-              900: '#0d0f17',
-              800: '#141824',
-              700: '#1d2335',
-              600: '#2a324b',
-              accent: '#8b5cf6',
-              cora: '#3b82f6',
-              bellato: '#eab308',
-              accretia: '#ef4444'
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
-    body { background-color: #0d0f17; color: #e2e8f0; font-family: system-ui, -apple-system, sans-serif; }
-    .glass { background: rgba(20, 24, 36, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .glow-accent { box-shadow: 0 0 20px rgba(139, 92, 246, 0.25); }
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #0d0f17; }
-    ::-webkit-scrollbar-thumb { background: #2a324b; border-radius: 4px; }
+    /* ============================================================
+       CERBERUS GAMES MARKET OFFICIAL THEME CLONE & ENHANCEMENTS
+       ============================================================ */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background-color: #17161d;
+      background-image: radial-gradient(circle at 50% 0%, #25232e 0%, #15141b 75%);
+      color: #cccccc;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* Top Navbar */
+    .top-header {
+      background-color: #1f1e27;
+      border-bottom: 2px solid #2e2c38;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 18px;
+      box-shadow: 0 0 12px rgba(124, 58, 237, 0.4);
+    }
+    .brand-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #f1f5f9;
+      text-transform: uppercase;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-top {
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 3px;
+      border: 1px solid #383545;
+      background-color: #272632;
+      color: #e2e8f0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-top:hover {
+      background-color: #353344;
+      border-color: #4f46e5;
+    }
+    .btn-top.btn-accent {
+      background: linear-gradient(90deg, #7c3aed, #6366f1);
+      border: none;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+    }
+    .btn-top.btn-accent:hover {
+      filter: brightness(1.15);
+    }
+
+    /* Submenu / Filters Bar */
+    .submenu-bar {
+      background-color: #1d1c25;
+      border-bottom: 1px solid #282633;
+      padding: 10px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+    .category-tabs {
+      display: flex;
+      background-color: #272633;
+      padding: 4px;
+      border-radius: 3px;
+      gap: 4px;
+    }
+    .cat-tab {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+    .cat-tab.active {
+      background-color: #3f3d52;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .server-select, .sort-select {
+      height: 34px;
+      background-color: #272633;
+      border: 1px solid #383546;
+      border-radius: 3px;
+      color: #ffffff;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+    .search-box {
+      display: flex;
+      align-items: center;
+      background-color: #272633;
+      border: 1px solid #383546;
+      border-radius: 3px;
+      height: 34px;
+      padding: 0 10px;
+      gap: 8px;
+      flex: 1;
+      max-width: 320px;
+    }
+    .search-box input {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 12px;
+      width: 100%;
+      outline: none;
+    }
+
+    /* Main Layout */
+    .market-container {
+      display: flex;
+      flex: 1;
+      max-width: 1500px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+      gap: 25px;
+    }
+
+    /* ============================================================
+       SIDEBAR FILTERS (EXACT MATCH TO CERBERUS GAMES MARKET SCREEN)
+       ============================================================ */
+    .p-body-sideNavCol {
+      width: 270px;
+      flex-shrink: 0;
+    }
+    #navSection {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    /* Race Filters */
+    .raceFilters {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .raceFilters .race {
+      flex: 1;
+      height: 48px;
+      background-color: #2d2c36;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid #3c3a47;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .raceFilters .race img {
+      height: 32px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+    .raceFilters .race:hover {
+      background-color: #383644;
+      border-color: #555266;
+    }
+    .raceFilters .race.bellato.active {
+      background-color: #4a4526;
+      border-color: #cbc168;
+      box-shadow: 0 0 10px rgba(203, 193, 104, 0.4);
+    }
+    .raceFilters .race.cora.active {
+      background-color: #3e2a44;
+      border-color: #b78fc1;
+      box-shadow: 0 0 10px rgba(183, 143, 193, 0.4);
+    }
+    .raceFilters .race.acretia.active {
+      background-color: #4a2626;
+      border-color: #e58e8e;
+      box-shadow: 0 0 10px rgba(229, 142, 142, 0.4);
+    }
+
+    /* Level Filters */
+    .levelFilters {
+      display: flex;
+      gap: 10px;
+    }
+    .levelFilters input {
+      height: 38px;
+      flex: 1;
+      background-color: #272632 !important;
+      border: 1px solid #383546 !important;
+      border-radius: 3px !important;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f0 !important;
+      padding: 0 10px;
+      text-align: center;
+      outline: none;
+    }
+    .levelFilters input:focus {
+      border-color: #6366f1 !important;
+    }
+
+    /* Filter Blocks Accordion */
+    .filtersBlock {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .filterBlockHeader {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      gap: 10px;
+      min-width: 120px;
+      height: 38px;
+      background: linear-gradient(90deg, #3d3e48 0%, #525363 100%);
+      border-radius: 3px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .filterBlockHeader:hover {
+      background: linear-gradient(90deg, #484955 0%, #5d5f70 100%);
+    }
+    .filterBlockHeader .icon {
+      font-size: 14px;
+      color: #cbd5e1;
+      width: 18px;
+      text-align: center;
+    }
+    .filterBlockHeader .title {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .filterBlockHeader .title span.count-badge {
+      border-radius: 12px;
+      padding: 1px 8px;
+      background-color: #0076fe;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .filterBlockHeader .arrow {
+      font-size: 12px;
+      color: #94a3b8;
+      transition: transform 0.2s;
+    }
+    .filterBlockHeader.open .arrow {
+      transform: rotate(180deg);
+    }
+
+    .filterBlockBody {
+      background: #25242d;
+      box-shadow: inset 0px 4px 6px rgba(0,0,0,0.3);
+      border-radius: 3px;
+      display: none;
+      padding: 8px 10px;
+      gap: 6px;
+      flex-direction: column;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .filterBlockBody.open {
+      display: flex;
+    }
+
+    /* Grade checkboxes grid */
+    .filterBlockBody.grade-grid {
+      display: none;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .filterBlockBody.grade-grid.open {
+      display: flex;
+    }
+    .gradeCheckbox {
+      width: 48%;
+      height: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 8px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 2px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .gradeCheckbox input {
+      cursor: pointer;
+      accent-color: #6366f1;
+    }
+    .grade0Background { background-color: #e2e8f0; color: #1e293b; }
+    .grade1Background { background-color: #fde047; color: #1e293b; }
+    .grade2Background { background-color: #facc15; color: #1e293b; }
+    .grade3Background { background-color: #fb923c; color: #1e293b; }
+    .grade4Background { background-color: #f87171; color: #fff; }
+    .grade5Background { background-color: #c084fc; color: #fff; }
+    .grade6Background { background-color: #60a5fa; color: #fff; }
+    .grade7Background { background-color: #4ade80; color: #1e293b; }
+    .grade8Background { background-color: #38bdf8; color: #1e293b; }
+    .grade9Background { background-color: #f43f5e; color: #fff; }
+
+    /* Component Checkboxes */
+    .itemTypeComponentCheckbox {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 8px;
+      background-color: #2e2d39;
+      border-radius: 2px;
+      font-size: 12px;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .itemTypeComponentCheckbox:hover {
+      background-color: #3a3949;
+      color: #ffffff;
+    }
+    .itemTypeComponentCheckbox input {
+      cursor: pointer;
+      accent-color: #6366f1;
+    }
+
+    /* Submit & Action Buttons in Sidebar */
+    .filterSubmit {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 5px;
+    }
+    #searchByFilters {
+      height: 38px;
+      background-color: #c0e0f1;
+      color: #1e293b;
+      font-weight: 800;
+      font-size: 13px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    #searchByFilters:hover {
+      background-color: #a5d2eb;
+      transform: translateY(-1px);
+    }
+    #resetFilters {
+      height: 34px;
+      background: linear-gradient(90deg, #e58e8e 0%, #c47575 100%);
+      color: #1e293b;
+      font-weight: 700;
+      font-size: 12px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    #resetFilters:hover {
+      filter: brightness(1.1);
+    }
+
+    /* Prominent Scrape with Filters Button */
+    #scrapeWithFiltersBtn {
+      height: 44px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 13px;
+      border: 1px solid #8b5cf6;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+      transition: all 0.2s;
+    }
+    #scrapeWithFiltersBtn:hover {
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+    }
+
+    /* ============================================================
+       MAIN CONTENT: ITEMS LIST & CARDS (CERBERUS OFFICIAL STYLE)
+       ============================================================ */
+    .market-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Notification banner */
+    .scraping-banner {
+      background: linear-gradient(90deg, rgba(124, 58, 237, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%);
+      border: 1px solid #7c3aed;
+      border-radius: 4px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #e0e7ff;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+    /* Items Container (Grid View) */
+    .itemsList {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    /* Exact Cerberus .itemBlock representation */
+    .itemBlock {
+      background-color: #24232c;
+      border: 1px solid #353342;
+      border-radius: 4px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .itemBlock:hover {
+      border-color: #6366f1;
+      background-color: #292833;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    }
+
+    .itemBlock-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .item-icon-box {
+      width: 44px;
+      height: 44px;
+      background-color: #1a1921;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      border: 2px solid #3d3b4b;
+    }
+    .item-icon-box.grade0 { border-color: #94a3b8; color: #94a3b8; }
+    .item-icon-box.grade1 { border-color: #fde047; color: #fde047; }
+    .item-icon-box.grade2 { border-color: #facc15; color: #facc15; }
+    .item-icon-box.grade3 { border-color: #fb923c; color: #fb923c; }
+    .item-icon-box.grade4 { border-color: #f87171; color: #f87171; }
+    .item-icon-box.grade8 { border-color: #38bdf8; color: #38bdf8; }
+
+    .item-main-info {
+      flex: 1;
+      overflow: hidden;
+    }
+    .itemName {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .itemName.grade0 { color: #f8fafc; }
+    .itemName.grade1 { color: #fde047; }
+    .itemName.grade4 { color: #f87171; }
+    .itemName.grade8 { color: #38bdf8; }
+
+    .item-tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .tag-race {
+      padding: 1px 6px;
+      border-radius: 2px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .tag-race.Bellato { background-color: rgba(234, 179, 8, 0.2); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3); }
+    .tag-race.Cora { background-color: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .tag-race.Accretia { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .tag-race.All { background-color: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+
+    .tag-level {
+      font-size: 11px;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .itemBlock-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #2e2c3a;
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+    .item-amount {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .itemBuy {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .buy-price-pill {
+      background-color: #1a1922;
+      border: 1px solid #3d3b4c;
+      padding: 4px 10px;
+      border-radius: 3px;
+      font-weight: 800;
+      font-size: 12px;
+      color: #34d399;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-details {
+      background-color: #2e2d3b;
+      border: 1px solid #3c3a4d;
+      color: #cbd5e1;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-details:hover {
+      background-color: #434255;
+      color: #ffffff;
+    }
+
+    /* Inline Expandable Details Box */
+    .inline-details-box {
+      display: none;
+      background-color: #1a1921;
+      border: 1px solid #333140;
+      border-radius: 3px;
+      padding: 10px;
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      margin-top: 6px;
+    }
+    .inline-details-box.open {
+      display: block;
+    }
+
+    /* Table View Container */
+    .table-view-container {
+      display: none;
+      background-color: #24232c;
+      border: 1px solid #353342;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+    .data-table th {
+      background-color: #1e1d25;
+      color: #94a3b8;
+      padding: 12px;
+      font-weight: 700;
+      border-bottom: 1px solid #353342;
+    }
+    .data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #2e2c38;
+      color: #e2e8f0;
+    }
+    .data-table tr:hover {
+      background-color: #2c2b36;
+    }
+
+    /* Pagination */
+    .Pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin: 20px 0;
+    }
+    .Pagination button {
+      padding: 6px 14px;
+      background-color: #272632;
+      border: 1px solid #383546;
+      color: #cbd5e1;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .Pagination button:hover:not(:disabled) {
+      background-color: #3b394b;
+      border-color: #6366f1;
+    }
+    .Pagination button.active {
+      background-color: #6366f1;
+      border-color: #6366f1;
+      color: #ffffff;
+    }
+    .Pagination button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-card {
+      background-color: #22212b;
+      border: 1px solid #383546;
+      border-radius: 6px;
+      width: 100%;
+      max-width: 500px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .hidden { display: none !important; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-  <!-- Navbar -->
-  <nav class="glass sticky top-0 z-40 px-6 py-4 border-b border-gray-800 flex flex-wrap items-center justify-between gap-4">
-    <div class="flex items-center space-x-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-purple-900/30">
-        <i class="fa-solid fa-fire text-xl"></i>
-      </div>
+  <!-- Top Navbar -->
+  <header class="top-header">
+    <div class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-gamepad"></i></div>
       <div>
-        <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-purple-400 via-indigo-200 to-white bg-clip-text text-transparent">
-          Cerberus Market Scraper & Analytics
-        </h1>
-        <p class="text-xs text-gray-400">Captura e Análise de Mercado RF Online (cerberus-games.com/market)</p>
+        <div class="brand-title">Cerberus Games Market Scraper</div>
+        <div class="brand-sub">Sistema de Coleta & Análise de Dados (cerberus-games.com/market)</div>
       </div>
     </div>
 
-    <!-- Top Action Buttons -->
-    <div class="flex items-center space-x-3">
-      <button onclick="openCookieModal()" class="px-3 py-2 text-xs font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 text-purple-300 border border-purple-500/30 transition flex items-center gap-2">
-        <i class="fa-solid fa-key"></i> Cookie /market
+    <div class="top-actions">
+      <button onclick="openCookieModal()" class="btn-top">
+        <i class="fa-solid fa-key text-purple-400"></i> Conta / Cookie
       </button>
-
-      <a href="/api/export/csv" class="px-3 py-2 text-xs font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 text-green-400 border border-green-500/30 transition flex items-center gap-2">
-        <i class="fa-solid fa-file-csv"></i> Exportar CSV
+      <a href="/api/export/csv" class="btn-top">
+        <i class="fa-solid fa-file-csv text-green-400"></i> Exportar CSV
       </a>
-
-      <a href="/api/export/json" class="px-3 py-2 text-xs font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 text-amber-400 border border-amber-500/30 transition flex items-center gap-2">
-        <i class="fa-solid fa-file-code"></i> Exportar JSON
+      <a href="/api/export/json" class="btn-top">
+        <i class="fa-solid fa-file-code text-amber-400"></i> Exportar JSON
       </a>
-
-      <button onclick="openScrapeModal()" id="btn-scrape" class="px-4 py-2 text-xs font-semibold rounded-lg bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/30 transition flex items-center gap-2">
-        <i class="fa-solid fa-robot"></i> Iniciar Scraping
+      <button onclick="triggerQuickScrape()" class="btn-top btn-accent" id="btn-quick-scrape">
+        <i class="fa-solid fa-rotate text-sm"></i> Atualizar Tudo
       </button>
     </div>
-  </nav>
+  </header>
 
-  <!-- Main Container -->
-  <main class="flex-1 p-6 space-y-6 max-w-7xl mx-auto w-full">
-
-    <!-- Scraping Banner / Notification -->
-    <div id="scraping-indicator" class="hidden glass p-4 rounded-xl border-l-4 border-purple-500 flex items-center justify-between animate-pulse">
-      <div class="flex items-center space-x-3 text-purple-300">
-        <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
-        <span>Web scraping em andamento nos servidores do Cerberus Games... Isso pode levar alguns segundos.</span>
+  <!-- Submenu & Controls Bar -->
+  <div class="submenu-bar">
+    <!-- Category Tabs -->
+    <div class="category-tabs">
+      <div class="cat-tab active" data-source="all" onclick="setSourceTab(this, 'all')">
+        <i class="fa-solid fa-globe mr-1"></i> Todos os Itens (<span id="count-all">0</span>)
       </div>
-      <span class="text-xs text-gray-400">Atualizando banco MariaDB</span>
-    </div>
-
-    <!-- Stat Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-      <!-- Total Items -->
-      <div class="glass p-5 rounded-2xl border border-gray-800/80 hover:border-purple-500/40 transition">
-        <div class="flex items-center justify-between text-gray-400 mb-2">
-          <span class="text-xs uppercase font-medium tracking-wider">Total de Itens</span>
-          <i class="fa-solid fa-boxes-stacked text-purple-400 text-lg"></i>
-        </div>
-        <div id="stat-total" class="text-3xl font-extrabold text-white">0</div>
-        <div class="text-xs text-gray-500 mt-1">Registrados no MariaDB</div>
+      <div class="cat-tab" data-source="web_auction" onclick="setSourceTab(this, 'web_auction')">
+        <i class="fa-solid fa-store mr-1 text-purple-400"></i> Web-Auction (/market) (<span id="count-auction">0</span>)
       </div>
-
-      <!-- Cora Items -->
-      <div class="glass p-5 rounded-2xl border border-gray-800/80 hover:border-blue-500/40 transition">
-        <div class="flex items-center justify-between text-gray-400 mb-2">
-          <span class="text-xs uppercase font-medium tracking-wider">Raça: Cora</span>
-          <i class="fa-solid fa-wand-magic-sparkles text-blue-400 text-lg"></i>
-        </div>
-        <div id="stat-cora" class="text-3xl font-extrabold text-blue-400">0</div>
-        <div class="text-xs text-gray-500 mt-1">Magos, Invocadores e Tanks</div>
-      </div>
-
-      <!-- Bellato Items -->
-      <div class="glass p-5 rounded-2xl border border-gray-800/80 hover:border-yellow-500/40 transition">
-        <div class="flex items-center justify-between text-gray-400 mb-2">
-          <span class="text-xs uppercase font-medium tracking-wider">Raça: Bellato</span>
-          <i class="fa-solid fa-shield-halved text-yellow-400 text-lg"></i>
-        </div>
-        <div id="stat-bellato" class="text-3xl font-extrabold text-yellow-400">0</div>
-        <div class="text-xs text-gray-500 mt-1">MAUs, Armaduras e Armas</div>
-      </div>
-
-      <!-- Accretia Items -->
-      <div class="glass p-5 rounded-2xl border border-gray-800/80 hover:border-red-500/40 transition">
-        <div class="flex items-center justify-between text-gray-400 mb-2">
-          <span class="text-xs uppercase font-medium tracking-wider">Raça: Accretia</span>
-          <i class="fa-solid fa-gun text-red-400 text-lg"></i>
-        </div>
-        <div id="stat-accretia" class="text-3xl font-extrabold text-red-400">0</div>
-        <div class="text-xs text-gray-500 mt-1">Lançadores e Especialistas</div>
-      </div>
-
-      <!-- Status Scraper -->
-      <div class="glass p-5 rounded-2xl border border-gray-800/80 hover:border-indigo-500/40 transition">
-        <div class="flex items-center justify-between text-gray-400 mb-2">
-          <span class="text-xs uppercase font-medium tracking-wider">Último Scrape</span>
-          <i class="fa-solid fa-clock-rotate-left text-indigo-400 text-lg"></i>
-        </div>
-        <div id="stat-last-time" class="text-sm font-bold text-gray-200 truncate">Nunca</div>
-        <div id="stat-last-status" class="text-xs text-emerald-400 font-semibold mt-1">Pronto</div>
+      <div class="cat-tab" data-source="forum_marketplace" onclick="setSourceTab(this, 'forum_marketplace')">
+        <i class="fa-solid fa-comments mr-1 text-blue-400"></i> Fórum Marketplace (<span id="count-forum">0</span>)
       </div>
     </div>
 
-    <!-- Analytics Charts Row -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Race Chart -->
-      <div class="glass p-6 rounded-2xl">
-        <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
-          <i class="fa-solid fa-chart-pie text-purple-400"></i> Distribuição por Raça
-        </h3>
-        <div class="h-64 relative flex items-center justify-center">
-          <canvas id="raceChart"></canvas>
-        </div>
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <!-- Server Selection -->
+      <select id="serverSelect" class="server-select" onchange="onFilterChange()">
+        <option value="1" selected>CERBERUS - FORCE&amp;STEEL</option>
+        <option value="0">CERBERUS - STAGE ERA</option>
+        <option value="">Ambos os Servidores</option>
+      </select>
+
+      <!-- Search by Name -->
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass text-gray-500 text-xs"></i>
+        <input type="text" id="searchInput" placeholder="Search by item name..." oninput="debounceSearch()">
       </div>
 
-      <!-- Category Chart -->
-      <div class="glass p-6 rounded-2xl">
-        <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
-          <i class="fa-solid fa-chart-bar text-indigo-400"></i> Distribuição por Tipo de Item
-        </h3>
-        <div class="h-64 relative">
-          <canvas id="categoryChart"></canvas>
-        </div>
+      <!-- Sort Selection -->
+      <select id="sortSelect" class="sort-select" onchange="onFilterChange()">
+        <option value="datedown">Mais Recentes</option>
+        <option value="costdown">Maior Preço (CS)</option>
+        <option value="costup">Menor Preço (CS)</option>
+        <option value="title ASC">Nome (A-Z)</option>
+      </select>
+
+      <!-- View Mode Toggle -->
+      <div class="btn-top" onclick="toggleViewMode()" id="viewModeBtn" title="Alternar entre Grade e Tabela">
+        <i class="fa-solid fa-table-cells-large"></i> Grade
       </div>
     </div>
+  </div>
 
-    <!-- Search, Filters and Table -->
-    <div class="glass p-6 rounded-2xl space-y-4">
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h2 class="text-lg font-bold text-white">Listagem do Mercado</h2>
-          <p class="text-xs text-gray-400">Itens, Personagens, Armaduras, Armas e Câmbio coletados</p>
+  <!-- Main Content Layout -->
+  <main class="market-container">
+
+    <!-- ============================================================
+         LEFT SIDEBAR FILTERS (EXACT MATCH TO THE UPLOADED SCREENSHOT)
+         ============================================================ -->
+    <aside class="p-body-sideNavCol">
+      <div id="navSection">
+
+        <!-- Race Filters (Bellato / Cora / Accretia) -->
+        <div class="raceFilters">
+          <div class="race bellato" id="race-bellato" onclick="toggleRaceFilter(this, 'bellato')" title="Bellato">
+            <input type="checkbox" name="race[]" value="bellato" style="display: none;">
+            <img src="/static/images/bellato.png" onerror="this.src='https://cerberus-games.com/styles/default/xenforo/classrace/bellatoRace.png?100'" alt="Bellato">
+          </div>
+          <div class="race cora" id="race-cora" onclick="toggleRaceFilter(this, 'cora')" title="Cora">
+            <input type="checkbox" name="race[]" value="cora" style="display: none;">
+            <img src="/static/images/cora.png" onerror="this.src='https://cerberus-games.com/styles/default/xenforo/classrace/coraRace.png?100'" alt="Cora">
+          </div>
+          <div class="race acretia" id="race-accretia" onclick="toggleRaceFilter(this, 'acretia')" title="Accretia">
+            <input type="checkbox" name="race[]" value="acretia" style="display: none;">
+            <img src="/static/images/accretia.png" onerror="this.src='https://cerberus-games.com/styles/default/xenforo/classrace/acretiaRace.png?100'" alt="Accretia">
+          </div>
         </div>
 
-        <!-- Filter Controls -->
-        <div class="flex flex-wrap items-center gap-3">
-          <!-- Search Input -->
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-500 text-xs"></i>
-            <input type="text" id="filter-search" placeholder="Buscar título, vendedor..." 
-                   oninput="debounceSearch()" 
-                   class="pl-8 pr-3 py-2 text-xs bg-cerberus-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 w-52">
+        <!-- Level Range (Min / Max) -->
+        <div class="levelFilters">
+          <input type="text" id="levelMinInput" placeholder="Level (min)" maxlength="2" onkeyup="filterNumbersOnly(this)">
+          <input type="text" id="levelMaxInput" placeholder="Level (max)" maxlength="2" onkeyup="filterNumbersOnly(this)">
+        </div>
+
+        <!-- 1. Grade Accordion -->
+        <div class="filtersBlock">
+          <div class="filterBlockHeader" onclick="toggleAccordion('gradeFiters', this)">
+            <i class="fa-solid fa-filter icon"></i>
+            <div class="title">Grade</div>
+            <i class="fa-solid fa-chevron-down arrow"></i>
+          </div>
+          <div class="filterBlockBody grade-grid" id="gradeFiters">
+            <div class="gradeCheckbox grade0Background" onclick="toggleGrade(0)">
+              <label for="grade0">Normal</label>
+              <input type="checkbox" name="grade[]" value="0" id="grade0">
+            </div>
+            <div class="gradeCheckbox grade1Background" onclick="toggleGrade(1)">
+              <label for="grade1">Type B</label>
+              <input type="checkbox" name="grade[]" value="1" id="grade1">
+            </div>
+            <div class="gradeCheckbox grade2Background" onclick="toggleGrade(2)">
+              <label for="grade2">Type A</label>
+              <input type="checkbox" name="grade[]" value="2" id="grade2">
+            </div>
+            <div class="gradeCheckbox grade3Background" onclick="toggleGrade(3)">
+              <label for="grade3">Type C</label>
+              <input type="checkbox" name="grade[]" value="3" id="grade3">
+            </div>
+            <div class="gradeCheckbox grade4Background" onclick="toggleGrade(4)">
+              <label for="grade4">Relic</label>
+              <input type="checkbox" name="grade[]" value="4" id="grade4">
+            </div>
+            <div class="gradeCheckbox grade5Background" onclick="toggleGrade(5)">
+              <label for="grade5">Rare</label>
+              <input type="checkbox" name="grade[]" value="5" id="grade5">
+            </div>
+            <div class="gradeCheckbox grade6Background" onclick="toggleGrade(6)">
+              <label for="grade6">Hero</label>
+              <input type="checkbox" name="grade[]" value="6" id="grade6">
+            </div>
+            <div class="gradeCheckbox grade7Background" onclick="toggleGrade(7)">
+              <label for="grade7">Set</label>
+              <input type="checkbox" name="grade[]" value="7" id="grade7">
+            </div>
+            <div class="gradeCheckbox grade8Background" onclick="toggleGrade(8)">
+              <label for="grade8">Leon</label>
+              <input type="checkbox" name="grade[]" value="8" id="grade8">
+            </div>
+            <div class="gradeCheckbox grade9Background" onclick="toggleGrade(9)">
+              <label for="grade9">PvP</label>
+              <input type="checkbox" name="grade[]" value="9" id="grade9">
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Weapon Accordion -->
+        <div class="filtersBlock">
+          <div class="filterBlockHeader" onclick="toggleAccordion('weaponFiters', this)">
+            <i class="fa-solid fa-khanda icon"></i>
+            <div class="title">
+              Weapon
+              <span class="count-badge" id="badge-weapon">1824</span>
+            </div>
+            <i class="fa-solid fa-chevron-down arrow"></i>
+          </div>
+          <div class="filterBlockBody" id="weaponFiters">
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="1"> Knives</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="2"> Swords</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="3"> Axes</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="4"> Maces</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="5"> Spears</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="6"> Bows</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="7"> Guns</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="8"> Launchers</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="9"> Staves</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="10"> Grenade Launchers</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="weaponFilter[]" value="12"> Crossbows</label>
+          </div>
+        </div>
+
+        <!-- 3. Armor Accordion -->
+        <div class="filtersBlock">
+          <div class="filterBlockHeader" onclick="toggleAccordion('armorFiters', this)">
+            <i class="fa-solid fa-shield-halved icon"></i>
+            <div class="title">
+              Armor
+              <span class="count-badge" id="badge-armor">2984</span>
+            </div>
+            <i class="fa-solid fa-chevron-down arrow"></i>
+          </div>
+          <div class="filterBlockBody" id="armorFiters">
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ih"> Helmet</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="iu"> Upper</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="il"> Lower</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="is"> Shield</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ig"> Gloves</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="id"> Shoes</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ik"> Cape</label>
+          </div>
+        </div>
+
+        <!-- 4. Item Class Accordion -->
+        <div class="filtersBlock">
+          <div class="filterBlockHeader" onclick="toggleAccordion('classFiters', this)">
+            <i class="fa-solid fa-crosshairs icon"></i>
+            <div class="title">Item Class</div>
+            <i class="fa-solid fa-chevron-down arrow"></i>
+          </div>
+          <div class="filterBlockBody" id="classFiters">
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="armor_class[]" value="1"> Warrior</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="armor_class[]" value="2"> Ranger</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="armor_class[]" value="3"> Spiritualist</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="armor_class[]" value="4"> Specialist</label>
+          </div>
+        </div>
+
+        <!-- 5. Jewelry Accordion -->
+        <div class="filtersBlock">
+          <div class="filterBlockHeader" onclick="toggleAccordion('jewelryFiters', this)">
+            <i class="fa-solid fa-ring icon"></i>
+            <div class="title">
+              Jewelry
+              <span class="count-badge" id="badge-jewelry">344</span>
+            </div>
+            <i class="fa-solid fa-chevron-down arrow"></i>
+          </div>
+          <div class="filterBlockBody" id="jewelryFiters">
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ii"> Ring</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ia"> Amulet</label>
+          </div>
+        </div>
+
+        <!-- 6. Other Accordion -->
+        <div class="filtersBlock">
+          <div class="filterBlockHeader" onclick="toggleAccordion('otherFiters', this)">
+            <i class="fa-solid fa-gem icon"></i>
+            <div class="title">
+              Other
+              <span class="count-badge" id="badge-other">1275</span>
+            </div>
+            <i class="fa-solid fa-chevron-down arrow"></i>
+          </div>
+          <div class="filterBlockBody" id="otherFiters">
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ic"> Force</label>
+            <label class="itemTypeComponentCheckbox"><input type="checkbox" name="itemFilter[]" value="ir"> Resources</label>
+          </div>
+        </div>
+
+        <!-- Sidebar Action Buttons -->
+        <div class="filterSubmit">
+          <button id="searchByFilters" onclick="applyLocalFilters()" type="button">
+            <i class="fa-solid fa-magnifying-glass"></i> Begin search
+          </button>
+          
+          <div id="resetFilters" onclick="resetAllFilters()">
+            Reset filters
           </div>
 
-          <!-- Race Filter -->
-          <select id="filter-race" onchange="loadItems(1)" class="px-3 py-2 text-xs bg-cerberus-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500">
-            <option value="All">Todas as Raças</option>
-            <option value="Bellato">Bellato</option>
-            <option value="Cora">Cora</option>
-            <option value="Accretia">Accretia</option>
-          </select>
+          <!-- PROMINENT BUTTON: SCRAPE COM ESSES FILTROS -->
+          <button id="scrapeWithFiltersBtn" onclick="triggerScrapeWithActiveFilters()" type="button">
+            <i class="fa-solid fa-bolt"></i> Scrapar com estes Filtros
+          </button>
+        </div>
 
-          <!-- Category Filter -->
-          <select id="filter-category" onchange="loadItems(1)" class="px-3 py-2 text-xs bg-cerberus-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500">
-            <option value="All">Todas as Categorias</option>
-            <option value="Character">Personagens</option>
-            <option value="Weapon">Armas</option>
-            <option value="Armor">Armaduras</option>
-            <option value="Jewelry">Bijuterias</option>
-            <option value="Currency / Resource">Recursos / Moeda</option>
-            <option value="General / Items">Gerais</option>
-          </select>
+      </div>
+    </aside>
 
-          <!-- Source Filter -->
-          <select id="filter-source" onchange="loadItems(1)" class="px-3 py-2 text-xs bg-cerberus-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500">
-            <option value="All">Todas as Origens</option>
-            <option value="web_auction">Web-Auction (/market)</option>
-            <option value="forum_marketplace">Fórum Marketplace</option>
-          </select>
+    <!-- ============================================================
+         MAIN CONTENT: ITEMS LISTING (CERBERUS CARDS / TABLE VIEW)
+         ============================================================ -->
+    <section class="market-content">
 
-          <!-- Sort Filter -->
-          <select id="filter-sort" onchange="loadItems(1)" class="px-3 py-2 text-xs bg-cerberus-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500">
-            <option value="scraped_at DESC">Mais Recentes</option>
-            <option value="price_val DESC">Maior Preço</option>
-            <option value="price_val ASC">Menor Preço</option>
-            <option value="title ASC">Título (A-Z)</option>
-          </select>
+      <!-- Scraping Banner -->
+      <div id="scrapingBanner" class="scraping-banner hidden">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-circle-notch fa-spin text-lg"></i>
+          <span><strong>Web Scraping em andamento no Cerberus Games...</strong> Coletando itens filtrados diretamente do Web-Auction e Fórum.</span>
+        </div>
+        <span style="font-size: 11px; opacity: 0.8;">Atualizando MariaDB</span>
+      </div>
+
+      <!-- Quick Metrics Overview -->
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div class="btn-top" style="cursor: default;">
+          <i class="fa-solid fa-boxes-stacked text-purple-400"></i> Total no Banco: <strong id="kpi-total" class="text-white ml-1">0</strong>
+        </div>
+        <div class="btn-top" style="cursor: default;">
+          <i class="fa-solid fa-filter text-indigo-400"></i> Exibindo: <strong id="kpi-filtered" class="text-white ml-1">0 itens</strong>
+        </div>
+        <div class="btn-top" style="cursor: default;">
+          <i class="fa-solid fa-clock-rotate-left text-blue-400"></i> Último Scrape: <span id="kpi-last-scrape" class="ml-1 text-gray-300">-</span>
         </div>
       </div>
 
-      <!-- Data Table -->
-      <div class="overflow-x-auto rounded-xl border border-gray-800">
-        <table class="w-full text-left text-xs text-gray-300">
-          <thead class="bg-gray-900/80 text-gray-400 uppercase text-[10px] tracking-wider border-b border-gray-800">
+      <!-- Grid View (Cards Cerberus) -->
+      <div id="itemsGrid" class="itemsList">
+        <div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: #64748b;">
+          <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+          <p>Carregando itens do mercado...</p>
+        </div>
+      </div>
+
+      <!-- Table View -->
+      <div id="tableView" class="table-view-container">
+        <table class="data-table">
+          <thead>
             <tr>
-              <th class="p-3.5">Origem</th>
-              <th class="p-3.5">Raça</th>
-              <th class="p-3.5">Categoria</th>
-              <th class="p-3.5">Título / Anúncio</th>
-              <th class="p-3.5">Preço Estimado</th>
-              <th class="p-3.5">Vendedor</th>
-              <th class="p-3.5">Coletado Em</th>
-              <th class="p-3.5 text-right">Ação</th>
+              <th>Origem</th>
+              <th>Raça</th>
+              <th>Categoria</th>
+              <th>Item / Anúncio</th>
+              <th>Preço</th>
+              <th>Vendedor</th>
+              <th>Data</th>
+              <th style="text-align: right;">Ação</th>
             </tr>
           </thead>
-          <tbody id="items-tbody" class="divide-y divide-gray-800/60 bg-cerberus-800/40">
-            <!-- Dynamically populated -->
-            <tr>
-              <td colspan="8" class="p-8 text-center text-gray-500">
-                <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i>
-                <p>Carregando dados do mercado...</p>
-              </td>
-            </tr>
-          </tbody>
+          <tbody id="tableBody"></tbody>
         </table>
       </div>
 
       <!-- Pagination -->
-      <div class="flex items-center justify-between text-xs text-gray-400 pt-2">
-        <div id="pagination-info">Mostrando 0 de 0 itens</div>
-        <div class="flex items-center space-x-2">
-          <button id="btn-prev" onclick="prevPage()" class="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-40 transition">
-            <i class="fa-solid fa-chevron-left mr-1"></i> Anterior
-          </button>
-          <span id="pagination-current" class="px-3 py-1 font-semibold text-white">1</span>
-          <button id="btn-next" onclick="nextPage()" class="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-40 transition">
-            Próximo <i class="fa-solid fa-chevron-right ml-1"></i>
-          </button>
-        </div>
+      <div class="Pagination">
+        <button id="btnPrevPage" onclick="changePage(currentPage - 1)"><i class="fa-solid fa-chevron-left mr-1"></i> Anterior</button>
+        <span id="pageInfo" style="font-size: 13px; font-weight: 700; color: #fff; padding: 0 10px;">1</span>
+        <button id="btnNextPage" onclick="changePage(currentPage + 1)">Próximo <i class="fa-solid fa-chevron-right ml-1"></i></button>
       </div>
-    </div>
+
+    </section>
   </main>
 
-  <!-- Modal Trigger Scraping -->
-  <div id="scrapeModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass w-full max-w-lg p-6 rounded-2xl border border-gray-700 space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-gray-800 pb-3">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-filter text-purple-400"></i> Executar Web Scraping Filtrado
-        </h3>
-        <button onclick="closeScrapeModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <p class="text-xs text-gray-400">
-        Defina os filtros abaixo <strong>antes de iniciar a coleta</strong>. O robô irá varrer o Web-Auction e o Fórum capturando e salvando <strong>apenas os itens que atenderem aos critérios escolhidos</strong>.
-      </p>
-
-      <div class="space-y-3 text-xs">
-        <!-- Filtros Prévios -->
-        <div class="bg-gray-900/60 p-3 rounded-xl border border-gray-800 space-y-3">
-          <div class="text-[11px] font-bold text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
-            <i class="fa-solid fa-sliders"></i> Filtros Prévios da Coleta
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-gray-300 mb-1 font-semibold">Filtrar por Raça:</label>
-              <select id="scrape-race" class="w-full px-3 py-2 bg-cerberus-800 border border-gray-700 rounded-lg text-white">
-                <option value="All">Todas as Raças</option>
-                <option value="Bellato">Bellato</option>
-                <option value="Cora">Cora</option>
-                <option value="Accretia">Accretia</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-gray-300 mb-1 font-semibold">Filtrar por Categoria:</label>
-              <select id="scrape-category" class="w-full px-3 py-2 bg-cerberus-800 border border-gray-700 rounded-lg text-white">
-                <option value="All">Todas as Categorias</option>
-                <option value="Character">Character (Personagens / Contas)</option>
-                <option value="Weapon">Weapon (Armas & Relíquias)</option>
-                <option value="Armor">Armor (Armaduras & Sets)</option>
-                <option value="Jewelry">Jewelry (Joias & Elementais)</option>
-                <option value="Currency / Resource">Currency / Resource (KK, CS, Minérios)</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-gray-300 mb-1 font-semibold">Palavra-chave / Termo Específico (opcional):</label>
-            <input type="text" id="scrape-search" placeholder="Ex: MAU 50, Leon, Relic, Animus, 150kk..." class="w-full px-3 py-2 bg-cerberus-800 border border-gray-700 rounded-lg text-white placeholder-gray-500">
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-gray-300 mb-1 font-semibold">Origem da Coleta:</label>
-              <select id="scrape-source" class="w-full px-3 py-2 bg-cerberus-800 border border-purple-500/50 rounded-lg text-purple-300 font-semibold">
-                <option value="web_auction" selected>🎯 Apenas Web-Auction / Leilão (Sem Fórum)</option>
-                <option value="All">Ambos (Web-Auction + Fóruns)</option>
-                <option value="forum_marketplace">Apenas Fórum Marketplace</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-gray-300 mb-1 font-semibold">Servidor:</label>
-              <select id="scrape-server" class="w-full px-3 py-2 bg-cerberus-800 border border-gray-700 rounded-lg text-white">
-                <option value="All">Todos os Servidores</option>
-                <option value="1">FORCE & STEEL</option>
-                <option value="0">STAGE ERA</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Parâmetros de Páginas -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-          <div>
-            <label class="block text-gray-300 mb-1 font-semibold">Páginas do Web-Auction (/market):</label>
-            <input type="number" id="scrape-auction-pages" value="10" min="1" max="50" class="w-full px-3 py-2 bg-cerberus-800 border border-gray-700 rounded-lg text-white font-bold">
-          </div>
-          <div>
-            <label class="block text-gray-400 mb-1">Páginas do Fórum (se ativado):</label>
-            <input type="number" id="scrape-pages" value="0" min="0" max="20" class="w-full px-3 py-2 bg-cerberus-800 border border-gray-700 rounded-lg text-gray-400">
-          </div>
-        </div>
-
-        <div class="flex items-center space-x-2 pt-1 text-gray-400">
-          <input type="checkbox" id="scrape-details" class="rounded bg-cerberus-800 border-gray-700 text-purple-600 focus:ring-0">
-          <label for="scrape-details" class="text-xs">Coletar descrição completa de tópicos do fórum (caso ative o fórum)</label>
-        </div>
-      </div>
-
-      <div class="flex justify-end space-x-2 pt-3 border-t border-gray-800">
-        <button onclick="closeScrapeModal()" class="px-4 py-2 text-xs rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Cancelar</button>
-        <button onclick="executeScrape()" class="px-4 py-2 text-xs font-semibold rounded-lg bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/30 transition flex items-center gap-1.5">
-          <i class="fa-solid fa-play"></i> Iniciar Coleta Filtrada
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- Modal Cookie Config -->
-  <div id="cookieModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass w-full max-w-lg p-6 rounded-2xl border border-gray-700 space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-key text-purple-400"></i> Configurar Cookie do /market/
+  <div id="cookieModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-key text-purple-400"></i> Sessão / Cookie do Cerberus
         </h3>
-        <button onclick="closeCookieModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        <i class="fa-solid fa-xmark text-gray-400 hover:text-white cursor-pointer" onclick="closeCookieModal()"></i>
       </div>
-      <p class="text-xs text-gray-300">
-        O <strong>Web-Auction oficial</strong> (<code class="bg-gray-800 px-1 py-0.5 rounded text-purple-300">cerberus-games.com/market</code>) exige login na conta do fórum XenForo.
+      <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">
+        A conta <strong class="text-white">teste1</strong> já está configurada para login automático. Se preferir usar outro cookie de sessão (<code style="color: #a78bfa;">xf_user</code>):
       </p>
-
-      <div class="text-xs text-gray-400 bg-gray-900/60 p-3 rounded-lg border border-gray-800 space-y-1">
-        <div class="font-semibold text-gray-200">Como obter o Cookie:</div>
-        <div>1. Abra o navegador e faça login no site <a href="https://cerberus-games.com" target="_blank" class="text-purple-400 underline">cerberus-games.com</a></div>
-        <div>2. Abra as Ferramentas de Desenvolvedor (F12) &rarr; aba <strong>Application</strong> / <strong>Storage</strong> &rarr; <strong>Cookies</strong></div>
-        <div>3. Copie o valor do cookie <code class="text-indigo-300 font-mono">xf_user</code> ou o cabeçalho Cookie completo e cole abaixo:</div>
-      </div>
-
-      <div>
-        <label class="block text-xs font-semibold text-gray-300 mb-1">Valor do Cookie:</label>
-        <textarea id="cookie-input" rows="3" placeholder="xf_user=12345%2Cabcdef...; xf_session=..." class="w-full px-3 py-2 text-xs bg-cerberus-800 border border-gray-700 rounded-lg text-white font-mono placeholder-gray-600"></textarea>
-      </div>
-
-      <div class="flex justify-end space-x-2 pt-2">
-        <button onclick="closeCookieModal()" class="px-4 py-2 text-xs rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300">Fechar</button>
-        <button onclick="saveCookie()" class="px-4 py-2 text-xs font-semibold rounded-lg bg-purple-600 hover:bg-purple-500 text-white">Salvar Cookie</button>
+      <textarea id="cookieInput" rows="3" placeholder="xf_user=...; xf_session=..." style="width: 100%; padding: 8px; font-size: 11px; background: #1a1921; border: 1px solid #383546; border-radius: 4px; color: #fff; font-family: monospace; margin-bottom: 12px;"></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 8px;">
+        <button class="btn-top" onclick="closeCookieModal()">Cancelar</button>
+        <button class="btn-top btn-accent" onclick="saveCookie()">Salvar Cookie</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal Item Details -->
-  <div id="detailModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass w-full max-w-2xl p-6 rounded-2xl border border-gray-700 space-y-4 max-h-[85vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-gray-800 pb-3">
-        <div class="flex items-center space-x-2">
-          <span id="detail-race-badge" class="px-2 py-0.5 rounded text-[10px] font-bold">RACE</span>
-          <h3 id="detail-title" class="text-base font-bold text-white">Item Title</h3>
-        </div>
-        <button onclick="closeDetailModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-gray-900/60 p-3 rounded-xl border border-gray-800">
-        <div>
-          <span class="text-gray-500 block">Preço</span>
-          <span id="detail-price" class="text-emerald-400 font-bold">-</span>
-        </div>
-        <div>
-          <span class="text-gray-500 block">Vendedor</span>
-          <span id="detail-seller" class="text-gray-300 font-medium">-</span>
-        </div>
-        <div>
-          <span class="text-gray-500 block">Categoria</span>
-          <span id="detail-category" class="text-gray-300">-</span>
-        </div>
-        <div>
-          <span class="text-gray-500 block">Origem</span>
-          <span id="detail-source" class="text-purple-300 font-mono">-</span>
-        </div>
-      </div>
-
-      <div>
-        <h4 class="text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Descrição / Conteúdo:</h4>
-        <pre id="detail-desc" class="text-xs text-gray-300 bg-cerberus-800 p-4 rounded-xl border border-gray-800 whitespace-pre-wrap font-sans max-h-72 overflow-y-auto leading-relaxed"></pre>
-      </div>
-
-      <div class="flex justify-between items-center pt-2 border-t border-gray-800">
-        <a id="detail-url-link" href="#" target="_blank" class="text-xs text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-1.5">
-          <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir anúncio original no Cerberus Games
-        </a>
-        <button onclick="closeDetailModal()" class="px-4 py-2 text-xs rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300">Fechar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- JavaScript logic -->
+  <!-- JavaScript Logic -->
   <script>
     let currentPage = 1;
     let totalPages = 1;
+    let currentSource = 'all';
+    let isGridView = true;
     let debounceTimer = null;
-    let raceChartInstance = null;
-    let categoryChartInstance = null;
     let currentItems = [];
 
     async function init() {
       await loadStats();
       await loadItems(1);
-      setInterval(checkScrapeStatus, 10000);
+      setInterval(checkScrapeStatus, 8000);
     }
 
+    // Toggle Accordion in Sidebar
+    function toggleAccordion(id, headerEl) {
+      const body = document.getElementById(id);
+      if (!body) return;
+      body.classList.toggle('open');
+      headerEl.classList.toggle('open');
+    }
+
+    // Grade Checkbox
+    function toggleGrade(val) {
+      const cb = document.getElementById('grade' + val);
+      if (cb) {
+        cb.checked = !cb.checked;
+      }
+    }
+
+    // Race Filter Toggle
+    function toggleRaceFilter(el, race) {
+      el.classList.toggle('active');
+      const cb = el.querySelector('input');
+      if (cb) cb.checked = el.classList.contains('active');
+    }
+
+    function filterNumbersOnly(inp) {
+      inp.value = inp.value.replace(/[^0-9]/g, '');
+    }
+
+    // Switch between Grid and Table View
+    function toggleViewMode() {
+      isGridView = !isGridView;
+      const btn = document.getElementById('viewModeBtn');
+      const grid = document.getElementById('itemsGrid');
+      const table = document.getElementById('tableView');
+
+      if (isGridView) {
+        btn.innerHTML = '<i class="fa-solid fa-table-cells-large"></i> Grade';
+        grid.style.display = 'grid';
+        table.style.display = 'none';
+      } else {
+        btn.innerHTML = '<i class="fa-solid fa-table-list"></i> Tabela';
+        grid.style.display = 'none';
+        table.style.display = 'block';
+      }
+    }
+
+    // Collect all active filters from sidebar
+    function getActiveFilters() {
+      const activeRaces = [];
+      if (document.getElementById('race-bellato').classList.contains('active')) activeRaces.push('bellato');
+      if (document.getElementById('race-cora').classList.contains('active')) activeRaces.push('cora');
+      if (document.getElementById('race-accretia').classList.contains('active')) activeRaces.push('acretia');
+
+      const levelMin = document.getElementById('levelMinInput').value.trim();
+      const levelMax = document.getElementById('levelMaxInput').value.trim();
+      const srv = document.getElementById('serverSelect').value;
+      const sort = document.getElementById('sortSelect').value;
+      const itemName = document.getElementById('searchInput').value.trim();
+
+      const grades = [];
+      document.querySelectorAll('input[name="grade[]"]:checked').forEach(c => grades.push(c.value));
+
+      const weaponFilters = [];
+      document.querySelectorAll('input[name="weaponFilter[]"]:checked').forEach(c => weaponFilters.push(c.value));
+
+      const itemFilters = [];
+      document.querySelectorAll('input[name="itemFilter[]"]:checked').forEach(c => itemFilters.push(c.value));
+
+      const armorClasses = [];
+      document.querySelectorAll('input[name="armor_class[]"]:checked').forEach(c => armorClasses.push(c.value));
+
+      return {
+        srv: srv,
+        race: activeRaces,
+        levelMin: levelMin || null,
+        levelMax: levelMax || null,
+        grade: grades,
+        weaponFilter: weaponFilters,
+        itemFilter: itemFilters,
+        armor_class: armorClasses,
+        itemName: itemName || null,
+        sort: sort
+      };
+    }
+
+    // Reset All Filters
+    function resetAllFilters() {
+      document.getElementById('race-bellato').classList.remove('active');
+      document.getElementById('race-cora').classList.remove('active');
+      document.getElementById('race-accretia').classList.remove('active');
+      document.querySelectorAll('#navSection input[type="checkbox"]').forEach(c => c.checked = false);
+      document.getElementById('levelMinInput').value = '';
+      document.getElementById('levelMaxInput').value = '';
+      document.getElementById('searchInput').value = '';
+      loadItems(1);
+    }
+
+    // Apply filters to local display
+    function applyLocalFilters() {
+      loadItems(1);
+    }
+
+    function onFilterChange() {
+      loadItems(1);
+    }
+
+    function debounceSearch() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => { loadItems(1); }, 350);
+    }
+
+    // Set Source Tab
+    function setSourceTab(el, source) {
+      document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      currentSource = source;
+      loadItems(1);
+    }
+
+    // Trigger Scrape with Active Filters
+    async function triggerScrapeWithActiveFilters() {
+      const filters = getActiveFilters();
+      const srvName = filters.srv === '1' ? 'CERBERUS - FORCE&STEEL' : (filters.srv === '0' ? 'CERBERUS - STAGE ERA' : 'Ambos');
+      
+      let summary = `Servidor: ${srvName}`;
+      if (filters.race && filters.race.length > 0) summary += `\nRaças: ${filters.race.join(', ')}`;
+      if (filters.levelMin || filters.levelMax) summary += `\nNível: ${filters.levelMin || 1} a ${filters.levelMax || 65}`;
+      if (filters.grade && filters.grade.length > 0) summary += `\nGrades selecionadas: ${filters.grade.length}`;
+      if (filters.weaponFilter && filters.weaponFilter.length > 0) summary += `\nArmas selecionadas: ${filters.weaponFilter.length}`;
+      if (filters.itemFilter && filters.itemFilter.length > 0) summary += `\nArmaduras/Joias: ${filters.itemFilter.length}`;
+
+      if (!confirm(`Deseja iniciar o Scraping no Cerberus Games com estes filtros aplicados?\n\n${summary}`)) {
+        return;
+      }
+
+      document.getElementById('scrapingBanner').classList.remove('hidden');
+
+      try {
+        const res = await fetch('/api/scrape', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            auction_pages: 5,
+            pages: 2,
+            fetch_details: false,
+            filters: filters
+          })
+        });
+        const data = await res.json();
+        alert('Robô iniciado com sucesso com seus filtros! O painel será atualizado em instantes.');
+      } catch (err) {
+        alert('Erro ao disparar scraper: ' + err);
+      }
+    }
+
+    async function triggerQuickScrape() {
+      if (!confirm('Deseja iniciar uma varredura completa do mercado agora?')) return;
+      document.getElementById('scrapingBanner').classList.remove('hidden');
+      try {
+        await fetch('/api/scrape', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pages: 2, auction_pages: 5, fetch_details: false })
+        });
+        alert('Scraping iniciado em segundo plano!');
+      } catch (err) {
+        alert('Erro ao disparar: ' + err);
+      }
+    }
+
+    // Load Stats from API
     async function loadStats() {
       try {
         const res = await fetch('/api/stats');
         const data = await res.json();
 
-        document.getElementById('stat-total').innerText = data.total_items.toLocaleString();
-        document.getElementById('stat-cora').innerText = (data.by_race['Cora'] || 0).toLocaleString();
-        document.getElementById('stat-bellato').innerText = (data.by_race['Bellato'] || 0).toLocaleString();
-        document.getElementById('stat-accretia').innerText = (data.by_race['Accretia'] || 0).toLocaleString();
+        document.getElementById('kpi-total').innerText = (data.total_items || 0).toLocaleString();
+        document.getElementById('count-all').innerText = (data.total_items || 0).toLocaleString();
+        document.getElementById('count-auction').innerText = (data.by_source['web_auction'] || 0).toLocaleString();
+        document.getElementById('count-forum').innerText = (data.by_source['forum_marketplace'] || 0).toLocaleString();
 
         if (data.latest_logs && data.latest_logs.length > 0) {
-          const last = data.latest_logs[0];
-          document.getElementById('stat-last-time').innerText = last.finished_at || last.started_at;
-          document.getElementById('stat-last-status').innerText = last.status.toUpperCase();
-          document.getElementById('stat-last-status').className = `text-xs font-semibold mt-1 ${last.status === 'success' ? 'text-emerald-400' : 'text-amber-400'}`;
+          const l = data.latest_logs[0];
+          document.getElementById('kpi-last-scrape').innerText = l.finished_at ? l.finished_at.substring(5, 16) : 'Executando...';
         }
 
-        renderCharts(data);
-
-        // toggle scraping indicator
-        const ind = document.getElementById('scraping-indicator');
+        const banner = document.getElementById('scrapingBanner');
         if (data.is_scraping) {
-          ind.classList.remove('hidden');
+          banner.classList.remove('hidden');
         } else {
-          ind.classList.add('hidden');
+          banner.classList.add('hidden');
         }
       } catch (err) {
-        console.error('Failed to load stats:', err);
+        console.error('Stats error:', err);
       }
     }
 
-    function renderCharts(data) {
-      // Race Chart
-      const raceLabels = Object.keys(data.by_race || {});
-      const raceCounts = Object.values(data.by_race || {});
-      const raceColors = raceLabels.map(r => {
-        if (r === 'Cora') return '#3b82f6';
-        if (r === 'Bellato') return '#eab308';
-        if (r === 'Accretia') return '#ef4444';
-        return '#8b5cf6';
-      });
-
-      const ctxRace = document.getElementById('raceChart').getContext('2d');
-      if (raceChartInstance) raceChartInstance.destroy();
-      raceChartInstance = new Chart(ctxRace, {
-        type: 'doughnut',
-        data: {
-          labels: raceLabels,
-          datasets: [{
-            data: raceCounts,
-            backgroundColor: raceColors,
-            borderColor: '#141824',
-            borderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { color: '#94a3b8', boxWidth: 12 } }
-          }
-        }
-      });
-
-      // Category Chart
-      const catLabels = Object.keys(data.by_category || {});
-      const catCounts = Object.values(data.by_category || {});
-
-      const ctxCat = document.getElementById('categoryChart').getContext('2d');
-      if (categoryChartInstance) categoryChartInstance.destroy();
-      categoryChartInstance = new Chart(ctxCat, {
-        type: 'bar',
-        data: {
-          labels: catLabels,
-          datasets: [{
-            label: 'Total de Itens',
-            data: catCounts,
-            backgroundColor: '#8b5cf6',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
-            y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
-          },
-          plugins: {
-            legend: { display: false }
-          }
-        }
-      });
-    }
-
+    // Load Items with active filters
     async function loadItems(page = 1) {
       currentPage = page;
-      const race = document.getElementById('filter-race').value;
-      const category = document.getElementById('filter-category').value;
-      const source = document.getElementById('filter-source').value;
-      const sort = document.getElementById('filter-sort').value;
-      const search = document.getElementById('filter-search').value.trim();
+      const filters = getActiveFilters();
 
       const params = new URLSearchParams({
         page: currentPage,
-        per_page: 25,
-        sort: sort
+        per_page: 24,
+        sort: filters.sort
       });
-      if (race !== 'All') params.append('race', race);
-      if (category !== 'All') params.append('category', category);
-      if (source !== 'All') params.append('source', source);
-      if (search) params.append('search', search);
 
-      const tbody = document.getElementById('items-tbody');
-      tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i><p>Carregando itens...</p></td></tr>`;
+      if (currentSource !== 'all') params.append('source', currentSource);
+      if (filters.race && filters.race.length > 0) params.append('race', filters.race.join(','));
+      if (filters.levelMin) params.append('levelMin', filters.levelMin);
+      if (filters.levelMax) params.append('levelMax', filters.levelMax);
+      if (filters.itemName) params.append('search', filters.itemName);
+
+      const grid = document.getElementById('itemsGrid');
+      const tBody = document.getElementById('tableBody');
 
       try {
         const res = await fetch(`/api/items?${params.toString()}`);
@@ -568,149 +1307,115 @@
         currentItems = data.items || [];
         totalPages = data.total_pages || 1;
 
-        document.getElementById('pagination-current').innerText = currentPage;
-        document.getElementById('pagination-info').innerText = `Mostrando ${currentItems.length} de ${data.total} itens encontrados (Página ${currentPage} de ${totalPages})`;
-        document.getElementById('btn-prev').disabled = currentPage <= 1;
-        document.getElementById('btn-next').disabled = currentPage >= totalPages;
+        document.getElementById('kpi-filtered').innerText = `${data.total} itens`;
+        document.getElementById('pageInfo').innerText = `Página ${currentPage} de ${totalPages}`;
+        document.getElementById('btnPrevPage').disabled = currentPage <= 1;
+        document.getElementById('btnNextPage').disabled = currentPage >= totalPages;
 
         if (currentItems.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-gray-500">Nenhum item encontrado com os filtros atuais. Clique em "Iniciar Scraping" para coletar mais dados.</td></tr>`;
+          grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: #94a3b8;">Nenhum item encontrado com os filtros atuais. Clique em "Scrapar com estes Filtros" para buscar ao vivo no site.</div>';
+          tBody.innerHTML = '<tr><td colspan="8" style="padding: 20px; text-align: center; color: #94a3b8;">Nenhum item encontrado.</td></tr>';
           return;
         }
 
-        tbody.innerHTML = currentItems.map((item, idx) => {
-          let raceBadge = '';
-          if (item.race === 'Cora') raceBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">Cora</span>';
-          else if (item.race === 'Bellato') raceBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">Bellato</span>';
-          else if (item.race === 'Accretia') raceBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">Accretia</span>';
-          else raceBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-500/20 text-gray-400">All</span>';
+        // Render Grid Cards (.itemBlock)
+        grid.innerHTML = currentItems.map((item, idx) => {
+          const extra = item.extra_data || {};
+          const gradeClass = extra.grade_class || 'grade0';
+          const level = extra.level || '';
+          const amount = extra.amount || '1 pcs.';
+          const price = item.price || 'Negotiable';
+          const isAuction = item.source_type === 'web_auction';
 
-          const sourceBadge = item.source_type === 'web_auction' 
-            ? '<span class="text-purple-400 font-mono text-[10px] font-semibold"><i class="fa-solid fa-store mr-1"></i>Auction</span>'
-            : '<span class="text-gray-400 font-mono text-[10px]"><i class="fa-solid fa-comments mr-1"></i>Fórum</span>';
-
-          const safePrice = item.price || 'Negotiable';
-          const priceColor = safePrice.toLowerCase().includes('negotiable') ? 'text-gray-400' : 'text-emerald-400 font-bold';
+          let iconHtml = '<i class="fa-solid fa-box-open"></i>';
+          if (item.category === 'Weapon') iconHtml = '<i class="fa-solid fa-khanda"></i>';
+          else if (item.category === 'Armor') iconHtml = '<i class="fa-solid fa-shield-halved"></i>';
+          else if (item.category === 'Jewelry') iconHtml = '<i class="fa-solid fa-ring"></i>';
+          else if (item.category === 'Character') iconHtml = '<i class="fa-solid fa-user-ninja"></i>';
+          else if (item.category === 'Currency / Resource') iconHtml = '<i class="fa-solid fa-coins"></i>';
 
           return `
-            <tr class="hover:bg-cerberus-700/40 transition group">
-              <td class="p-3.5 whitespace-nowrap">${sourceBadge}</td>
-              <td class="p-3.5 whitespace-nowrap">${raceBadge}</td>
-              <td class="p-3.5 whitespace-nowrap"><span class="px-2 py-0.5 bg-gray-800 rounded text-gray-300 text-[11px]">${item.category}</span></td>
-              <td class="p-3.5 max-w-xs truncate font-medium text-white group-hover:text-purple-300 transition">
-                <a href="${item.item_url}" target="_blank" class="hover:underline flex items-center gap-1">
-                  ${escapeHtml(item.title)}
-                  <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-gray-500"></i>
-                </a>
-              </td>
-              <td class="p-3.5 whitespace-nowrap ${priceColor}">${safePrice}</td>
-              <td class="p-3.5 whitespace-nowrap text-gray-300 font-mono text-[11px]">${item.seller || 'Anonymous'}</td>
-              <td class="p-3.5 whitespace-nowrap text-gray-500 text-[10px]">${item.scraped_at ? item.scraped_at.substring(0, 16) : '-'}</td>
-              <td class="p-3.5 text-right whitespace-nowrap">
-                <button onclick="openDetailModal(${idx})" class="px-2.5 py-1 text-[11px] rounded bg-gray-800 hover:bg-purple-600 text-gray-300 hover:text-white transition">
-                  <i class="fa-solid fa-eye"></i> Detalhes
-                </button>
-              </td>
-            </tr>
+            <div class="itemBlock" id="card-${idx}">
+              <div class="itemBlock-header">
+                <div class="item-icon-box ${gradeClass}">
+                  ${iconHtml}
+                </div>
+                <div class="item-main-info">
+                  <div class="itemName ${gradeClass}" title="${escapeHtml(item.title)}">
+                    ${escapeHtml(item.title)}
+                  </div>
+                  <div class="item-tags">
+                    <span class="tag-race ${item.race}">${item.race}</span>
+                    <span class="tag-level">${level ? 'Lvl ' + level : item.category}</span>
+                    ${isAuction ? '<span style="font-size: 10px; color: #a78bfa; font-weight: 700;">[Auction]</span>' : '<span style="font-size: 10px; color: #60a5fa;">[Fórum]</span>'}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Inline Details (Expandable) -->
+              <div class="inline-details-box" id="details-box-${idx}">
+${escapeHtml(item.description || item.title)}
+              </div>
+
+              <div class="itemBlock-footer">
+                <div class="item-amount">${amount}</div>
+                <div class="itemBuy">
+                  <button class="btn-details" onclick="toggleCardDetails(${idx})">
+                    <i class="fa-solid fa-info-circle mr-1"></i> Detalhes
+                  </button>
+                  <a href="${item.item_url}" target="_blank" class="buy-price-pill" title="Ver no Cerberus Games">
+                    <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i> ${price}
+                  </a>
+                </div>
+              </div>
+            </div>
           `;
         }).join('');
 
+        // Render Table Rows
+        tBody.innerHTML = currentItems.map((item, idx) => `
+          <tr>
+            <td>${item.source_type === 'web_auction' ? '<span style="color: #a78bfa; font-weight: 700;">Auction</span>' : '<span style="color: #94a3b8;">Fórum</span>'}</td>
+            <td><span class="tag-race ${item.race}">${item.race}</span></td>
+            <td>${item.category}</td>
+            <td style="font-weight: 600;"><a href="${item.item_url}" target="_blank" style="color: #fff; text-decoration: underline;">${escapeHtml(item.title)}</a></td>
+            <td style="color: #34d399; font-weight: 700;">${item.price}</td>
+            <td>${item.seller || 'Anonymous'}</td>
+            <td style="font-size: 11px; color: #94a3b8;">${item.scraped_at ? item.scraped_at.substring(0, 16) : '-'}</td>
+            <td style="text-align: right;">
+              <a href="${item.item_url}" target="_blank" class="btn-top" style="padding: 3px 8px; font-size: 11px;">
+                <i class="fa-solid fa-external-link"></i> Abrir
+              </a>
+            </td>
+          </tr>
+        `).join('');
+
       } catch (err) {
-        console.error('Failed to load items:', err);
-        tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-red-400">Erro ao consultar o banco de dados. Verifique a conexão.</td></tr>`;
+        console.error('Items load error:', err);
       }
     }
 
-    function prevPage() {
-      if (currentPage > 1) loadItems(currentPage - 1);
+    function toggleCardDetails(idx) {
+      const box = document.getElementById(`details-box-${idx}`);
+      if (box) box.classList.toggle('open');
     }
 
-    function nextPage() {
-      if (currentPage < totalPages) loadItems(currentPage + 1);
-    }
-
-    function debounceSearch() {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => { loadItems(1); }, 400);
-    }
-
-    // Modal helpers
-    function openScrapeModal() { document.getElementById('scrapeModal').classList.remove('hidden'); }
-    function closeScrapeModal() { document.getElementById('scrapeModal').classList.add('hidden'); }
-
-    function openCookieModal() { document.getElementById('cookieModal').classList.remove('hidden'); }
-    function closeCookieModal() { document.getElementById('cookieModal').classList.add('hidden'); }
-
-    function openDetailModal(idx) {
-      const item = currentItems[idx];
-      if (!item) return;
-
-      document.getElementById('detail-title').innerText = item.title;
-      document.getElementById('detail-price').innerText = item.price || 'Negotiable';
-      document.getElementById('detail-seller').innerText = item.seller || 'Anonymous';
-      document.getElementById('detail-category').innerText = item.category || 'General';
-      document.getElementById('detail-source').innerText = item.source_type;
-      document.getElementById('detail-desc').innerText = item.description || item.title;
-      document.getElementById('detail-url-link').href = item.item_url;
-
-      const badge = document.getElementById('detail-race-badge');
-      badge.innerText = item.race;
-      if (item.race === 'Cora') badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400';
-      else if (item.race === 'Bellato') badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-500/20 text-yellow-400';
-      else if (item.race === 'Accretia') badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400';
-      else badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-gray-500/20 text-gray-300';
-
-      document.getElementById('detailModal').classList.remove('hidden');
-    }
-
-    function closeDetailModal() { document.getElementById('detailModal').classList.add('hidden'); }
-
-    async function executeScrape() {
-      const pages = parseInt(document.getElementById('scrape-pages').value) || 2;
-      const auctionPages = parseInt(document.getElementById('scrape-auction-pages').value) || 5;
-      const details = document.getElementById('scrape-details').checked;
-      const race = document.getElementById('scrape-race').value;
-      const category = document.getElementById('scrape-category').value;
-      const search = document.getElementById('scrape-search').value.trim();
-      const source = document.getElementById('scrape-source').value;
-      const server = document.getElementById('scrape-server').value;
-
-      closeScrapeModal();
-      document.getElementById('scraping-indicator').classList.remove('hidden');
-
-      try {
-        const res = await fetch('/api/scrape', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            pages: pages,
-            auction_pages: auctionPages,
-            fetch_details: details,
-            race: race,
-            category: category,
-            search: search,
-            source: source,
-            server: server
-          })
-        });
-        const data = await res.json();
-        alert(data.message || 'Scraping filtrado iniciado em segundo plano! A página atualizará automaticamente.');
-      } catch (err) {
-        alert('Falha ao disparar scraper: ' + err);
+    function changePage(p) {
+      if (p >= 1 && p <= totalPages) {
+        loadItems(p);
       }
     }
-
 
     async function checkScrapeStatus() {
       try {
         const res = await fetch('/api/stats');
         const data = await res.json();
-        const ind = document.getElementById('scraping-indicator');
+        const banner = document.getElementById('scrapingBanner');
         if (data.is_scraping) {
-          ind.classList.remove('hidden');
+          banner.classList.remove('hidden');
         } else {
-          if (!ind.classList.contains('hidden')) {
-            ind.classList.add('hidden');
+          if (!banner.classList.contains('hidden')) {
+            banner.classList.add('hidden');
             await loadStats();
             await loadItems(currentPage);
           }
@@ -718,29 +1423,26 @@
       } catch (e) {}
     }
 
+    function openCookieModal() { document.getElementById('cookieModal').classList.remove('hidden'); }
+    function closeCookieModal() { document.getElementById('cookieModal').classList.add('hidden'); }
+
     async function saveCookie() {
-      const val = document.getElementById('cookie-input').value.trim();
-      if (!val) {
-        alert('Por favor insira um cookie válido.');
-        return;
-      }
+      const val = document.getElementById('cookieInput').value.trim();
+      if (!val) return;
       try {
-        const res = await fetch('/api/cookie', {
+        await fetch('/api/cookie', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ cookie: val })
         });
-        const data = await res.json();
-        alert('Cookie atualizado com sucesso! O Web Auction (/market) agora usará sua sessão.');
+        alert('Cookie atualizado!');
         closeCookieModal();
-      } catch (err) {
-        alert('Erro ao salvar cookie: ' + err);
-      }
+      } catch (e) { alert('Erro: ' + e); }
     }
 
-    function escapeHtml(text) {
-      if (!text) return '';
-      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     window.onload = init;

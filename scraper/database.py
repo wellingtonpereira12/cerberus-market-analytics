@@ -163,27 +163,46 @@ class CerberusDatabase:
         except Exception as e:
             logger.error(f"Failed to finish scrape log {log_id}: {e}")
 
-    def query_items(self, page=1, per_page=25, race=None, category=None, search=None, source=None, sort="scraped_at DESC"):
+    def query_items(self, page=1, per_page=24, race=None, category=None, search=None, source=None, levelMin=None, levelMax=None, sort="scraped_at DESC"):
         with self.get_connection() as conn:
             where_clauses = ["1=1"]
             params = []
 
+            # Race filter (can be comma-separated or list)
             if race and race.lower() != 'all':
-                where_clauses.append("race = %s")
-                params.append(race)
+                races = [r.strip().capitalize() for r in race.split(",") if r.strip()]
+                if races:
+                    placeholders = ",".join(["%s"] * len(races))
+                    where_clauses.append(f"race IN ({placeholders})")
+                    params.extend(races)
 
+            # Category filter
             if category and category.lower() != 'all':
-                where_clauses.append("category = %s")
-                params.append(category)
+                cats = [c.strip() for c in category.split(",") if c.strip()]
+                if cats:
+                    placeholders = ",".join(["%s"] * len(cats))
+                    where_clauses.append(f"category IN ({placeholders})")
+                    params.extend(cats)
 
+            # Source filter
             if source and source.lower() != 'all':
                 where_clauses.append("source_type = %s")
                 params.append(source)
 
+            # Search keyword
             if search:
                 where_clauses.append("(title LIKE %s OR description LIKE %s OR seller LIKE %s)")
                 like_val = f"%{search}%"
                 params.extend([like_val, like_val, like_val])
+
+            # Level range
+            if levelMin:
+                where_clauses.append("(CAST(REGEXP_SUBSTR(title, '[0-9]+') AS UNSIGNED) >= %s OR title NOT REGEXP '[0-9]+')")
+                params.append(int(levelMin))
+
+            if levelMax:
+                where_clauses.append("(CAST(REGEXP_SUBSTR(title, '[0-9]+') AS UNSIGNED) <= %s OR title NOT REGEXP '[0-9]+')")
+                params.append(int(levelMax))
 
             where_sql = " AND ".join(where_clauses)
             offset = (page - 1) * per_page
@@ -194,7 +213,10 @@ class CerberusDatabase:
                 "price_val DESC": "price_val DESC",
                 "price_val ASC": "price_val ASC",
                 "title ASC": "title ASC",
-                "title DESC": "title DESC"
+                "title DESC": "title DESC",
+                "datedown": "scraped_at DESC",
+                "costdown": "price_val DESC",
+                "costup": "price_val ASC"
             }
             order_sql = allowed_sorts.get(sort, "scraped_at DESC")
 
