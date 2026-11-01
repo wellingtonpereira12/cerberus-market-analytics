@@ -362,9 +362,9 @@ class CerberusScraper:
         logger.info(f"Finished forum {section['name']}: {len(items)} filtered items scraped.")
         return items
 
-    def run(self, max_forum_pages=2, max_auction_pages=5, fetch_details=False,
+    def run(self, max_forum_pages=0, max_auction_pages=5, fetch_details=False,
             filter_race=None, filter_category=None, filter_search=None,
-            filter_source=None, filter_server=None):
+            filter_source="web_auction", filter_server=None):
 
         filter_desc = []
         if filter_race and filter_race != 'All': filter_desc.append(f"Raça={filter_race}")
@@ -395,8 +395,8 @@ class CerberusScraper:
                 auction_items = []
                 logger.info("Skipping Web-Auction due to source filter.")
 
-            # 2. Scrape Public Marketplace Forums (if not filtered to auction only)
-            if not filter_source or filter_source.lower() in ['all', 'todas', 'todos', 'forum_marketplace', 'forum', 'forums']:
+            # 2. Scrape Public Marketplace Forums (only if explicitly requested)
+            if filter_source and filter_source.lower() in ['forum_marketplace', 'forum', 'forums', 'all']:
                 sections_to_scrape = FORUM_SECTIONS
                 if filter_server == "1":
                     sections_to_scrape = [s for s in FORUM_SECTIONS if s['id'] == "161"]

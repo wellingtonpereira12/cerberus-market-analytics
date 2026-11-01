@@ -35,13 +35,13 @@ class CookiePayload(BaseModel):
     cookie: str
 
 class ScrapeTriggerPayload(BaseModel):
-    pages: Optional[int] = 2
+    pages: Optional[int] = 0
     auction_pages: Optional[int] = 5
     fetch_details: Optional[bool] = False
     race: Optional[str] = None
     category: Optional[str] = None
     search: Optional[str] = None
-    source: Optional[str] = None
+    source: Optional[str] = "web_auction"
     server: Optional[str] = None
 
 @app.on_event("startup")
@@ -116,15 +116,16 @@ def trigger_scrape(payload: ScrapeTriggerPayload, background_tasks: BackgroundTa
     if is_scraping:
         return {"status": "already_running", "message": "Scraping is already in progress"}
     
+    chosen_source = payload.source or "web_auction"
     background_tasks.add_task(
         run_scraper_task,
-        payload.pages or 2,
+        payload.pages if chosen_source in ['all', 'forum_marketplace'] else 0,
         payload.auction_pages or 5,
         payload.fetch_details or False,
         payload.race,
         payload.category,
         payload.search,
-        payload.source,
+        chosen_source,
         payload.server
     )
     
@@ -132,13 +133,17 @@ def trigger_scrape(payload: ScrapeTriggerPayload, background_tasks: BackgroundTa
     if payload.race and payload.race != 'All': filters_info.append(f"Raça={payload.race}")
     if payload.category and payload.category != 'All': filters_info.append(f"Categoria={payload.category}")
     if payload.search: filters_info.append(f"Busca='{payload.search}'")
-    if payload.source and payload.source != 'All': filters_info.append(f"Origem={payload.source}")
     if payload.server and payload.server != 'All': filters_info.append(f"Servidor={payload.server}")
 
-    filter_str = f" com filtros: {', '.join(filters_info)}" if filters_info else " sem filtros prévios"
+    filter_str = f" com filtros: {', '.join(filters_info)}" if filters_info else ""
+    if chosen_source == "web_auction":
+        msg = f"Scraping do Web-Auction (/market) iniciado com {payload.auction_pages or 5} páginas{filter_str} (Fórum desativado)."
+    else:
+        msg = f"Scraping iniciado em background ({chosen_source}){filter_str}."
+
     return {
         "status": "started",
-        "message": f"Scraping iniciado em background{filter_str} (Fórum: {payload.pages or 2} págs, Auction: {payload.auction_pages or 5} págs)"
+        "message": msg
     }
 
 
